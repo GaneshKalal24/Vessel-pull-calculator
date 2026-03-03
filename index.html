@@ -13,8 +13,8 @@
             --panel-hover: #1f1f1f;
             --accent: #00f0ff;
             --accent-hover: #00c3cc;
-            --text-main: #ffffff; /* Brighter white */
-            --text-muted: #aaaaaa; /* Brighter gray */
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
             --pass: #00ff9d;
             --fail: #ff2a55;
             --border: #333333;
@@ -78,7 +78,7 @@
 
         h1 { 
             color: var(--text-main); 
-            font-size: 42px; /* Bigger */
+            font-size: 42px; /* Bigger heading */
             margin-bottom: 40px;
             font-weight: 300;
             letter-spacing: 1px;
@@ -113,7 +113,7 @@
             animation: slideUpFade 0.6s ease forwards;
         }
 
-        /* Staggered card animations */
+        /* Staggered entry animations */
         .bento-card:nth-child(1) { animation-delay: 0.1s; }
         .bento-card:nth-child(2) { animation-delay: 0.2s; }
         .bento-card:nth-child(3) { animation-delay: 0.3s; }
@@ -127,7 +127,6 @@
 
         .card-title { font-size: 26px; font-weight: bold; color: var(--text-main); margin-bottom: 12px; }
         .card-desc { font-size: 16px; color: var(--text-muted); line-height: 1.5; }
-        
         .card-large { grid-column: 1 / -1; }
 
         /* --- Pages --- */
@@ -170,7 +169,6 @@
             border: 1px solid var(--border); 
             transition: all 0.3s ease;
         }
-        .input-group:hover { border-color: rgba(0, 240, 255, 0.3); }
 
         label { display: inline-block; width: 65%; font-size: 16px; margin-bottom: 15px; color: var(--text-muted); font-weight: 500; }
         input { 
@@ -195,7 +193,6 @@
             font-size: 18px;
             font-weight: bold;
             text-transform: uppercase; 
-            letter-spacing: 1px;
             border-radius: 8px; 
             cursor: pointer; 
             width: 100%; 
@@ -233,17 +230,17 @@
             
             <div class="bento-card" onclick="openPage('page-machines')">
                 <div class="card-title">Machine Database</div>
-                <div class="card-desc">View and select capacities for available pulling machines (LI-556, etc). [WAITING FOR SPREADSHEET DATA]</div>
+                <div class="card-desc">View and select capacities for available pulling machines. [WAITING FOR SPREADSHEET DATA]</div>
             </div>
 
             <div class="bento-card" onclick="openPage('page-reference')">
                 <div class="card-title">Rigging & Assumptions</div>
-                <div class="card-desc">Review standard AS 1666.1 compliance notes and load assumptions.</div>
+                <div class="card-desc">Review standard AS 1666.1 compliance notes and load assumptions for the Altona Demolition project.</div>
             </div>
             
             <div class="bento-card" onclick="openPage('page-other')">
                 <div class="card-title">Other Tools</div>
-                <div class="card-desc">Space reserved for additional spreadsheet tabs. [WAITING FOR SPREADSHEET DATA]</div>
+                <div class="card-desc">Space reserved for additional spreadsheet tabs.</div>
             </div>
         </div>
     </div>
@@ -302,12 +299,12 @@
 
     <div id="page-reference" class="page">
         <button class="back-btn" onclick="openPage('view-dashboard')">← Back to Dashboard</button>
-        <h2>Assumptions & Rigging</h2>
+        <h2>Project 269 Assumptions & Rigging</h2>
         <div class="input-group" style="font-size: 18px; line-height: 1.8;">
             <ul style="color: var(--text-muted);">
                 <li><strong style="color: var(--text-main);">1.</strong> The vessel will rotate about the defined rotation point.</li>
                 <li><strong style="color: var(--text-main);">2.</strong> The vessel centre of gravity is approximately coincident with the geometric centre of the base.</li>
-                <li><strong style="color: var(--text-main);">3.</strong> The vessel is stabilised by self weight alone. No allowance is made for grout adhesion, shear keys, bolts, etc.</li>
+                <li><strong style="color: var(--text-main);">3.</strong> The vessel is stabilised by self weight alone. No allowance is made for grout adhesion, shear keys, bolts, or other restraining forces.</li>
                 <li><strong style="color: var(--text-main);">4.</strong> The vessel is sufficiently strong to support its self weight during rotation and collapse.</li>
                 <li><strong style="color: var(--text-main);">5.</strong> Pulling is assumed to be conducted as a steady, pre-tensioned pull with no snatching or shock loading.</li>
             </ul>
@@ -379,7 +376,7 @@
         }
 
         const resultsDiv = document.getElementById('results');
-        resultsDiv.style.display = 'none'; // reset to trigger animation
+        resultsDiv.style.display = 'none'; 
         setTimeout(() => { resultsDiv.style.display = 'block'; }, 10);
     }
 </script>
