@@ -5,133 +5,224 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Altona Demolition Toolkit</title>
     <style>
+        /* --- Theme Variables --- */
         :root {
+            /* Dark Theme (Default) */
             --bg-color: #050505;
-            --panel-bg: #121212;
-            --panel-hover: #1a1a1a;
+            --panel-bg: #151515;
+            --panel-hover: #1f1f1f;
             --accent: #00f0ff;
-            --text-main: #e0e0e0;
-            --text-muted: #888;
+            --accent-hover: #00c3cc;
+            --text-main: #ffffff; /* Brighter white */
+            --text-muted: #aaaaaa; /* Brighter gray */
             --pass: #00ff9d;
-            --fail: #ff003c;
-            --border: #222;
+            --fail: #ff2a55;
+            --border: #333333;
+            --shadow: rgba(0, 0, 0, 0.8);
         }
 
+        body.light-mode {
+            /* Light Theme */
+            --bg-color: #f0f2f5;
+            --panel-bg: #ffffff;
+            --panel-hover: #f8f9fa;
+            --accent: #0056b3;
+            --accent-hover: #004494;
+            --text-main: #111111;
+            --text-muted: #555555;
+            --pass: #008a55;
+            --fail: #d32f2f;
+            --border: #cccccc;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Global Styles --- */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: var(--bg-color); 
             color: var(--text-main); 
             margin: 0; 
-            padding: 40px 20px; 
+            padding: 50px 20px; 
             display: flex; 
             justify-content: center;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            font-size: 18px; /* Bigger base font */
         }
 
         .container { 
-            max-width: 1000px; 
+            max-width: 1100px; 
             width: 100%; 
+            position: relative;
         }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--panel-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px var(--shadow);
+            z-index: 100;
+        }
+        .theme-toggle:hover { background: var(--panel-hover); border-color: var(--accent); color: var(--accent); }
 
         h1 { 
             color: var(--text-main); 
-            font-size: 32px; 
-            margin-bottom: 30px;
+            font-size: 42px; /* Bigger */
+            margin-bottom: 40px;
             font-weight: 300;
             letter-spacing: 1px;
+            animation: fadeInDown 0.6s ease forwards;
         }
-
         h1 span { color: var(--accent); font-weight: bold; }
+
+        h2 { font-size: 24px; color: var(--text-main); border-left: 4px solid var(--accent); padding-left: 15px; margin-bottom: 20px; }
 
         /* --- Bento Box Grid Dashboard --- */
         .bento-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            animation: fadeIn 0.5s ease;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
         .bento-card {
             background: var(--panel-bg);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 30px;
+            border-radius: 20px;
+            padding: 35px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-height: 150px;
+            min-height: 180px;
             position: relative;
-            overflow: hidden;
+            box-shadow: 0 10px 20px var(--shadow);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpFade 0.6s ease forwards;
         }
 
-        .bento-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 16px;
-            box-shadow: inset 0 0 0 1px transparent;
-            transition: all 0.3s ease;
-        }
+        /* Staggered card animations */
+        .bento-card:nth-child(1) { animation-delay: 0.1s; }
+        .bento-card:nth-child(2) { animation-delay: 0.2s; }
+        .bento-card:nth-child(3) { animation-delay: 0.3s; }
+        .bento-card:nth-child(4) { animation-delay: 0.4s; }
 
         .bento-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
             background: var(--panel-hover);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 40px var(--shadow), inset 0 0 0 2px var(--accent);
         }
 
-        .bento-card:hover::before {
-            box-shadow: inset 0 0 0 1px var(--accent);
-        }
-
-        .card-title { font-size: 22px; color: var(--text-main); margin-bottom: 10px; }
-        .card-desc { font-size: 14px; color: var(--text-muted); line-height: 1.4; }
+        .card-title { font-size: 26px; font-weight: bold; color: var(--text-main); margin-bottom: 12px; }
+        .card-desc { font-size: 16px; color: var(--text-muted); line-height: 1.5; }
         
-        /* Make the calculator card span larger if needed */
         .card-large { grid-column: 1 / -1; }
 
         /* --- Pages --- */
-        .page { display: none; animation: slideIn 0.4s ease; background: var(--panel-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--border); }
-        .page.active { display: block; }
+        .page { 
+            display: none; 
+            background: var(--panel-bg); 
+            padding: 50px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 15px 40px var(--shadow);
+        }
+        .page.active { 
+            display: block; 
+            animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
         .back-btn {
             background: transparent;
             color: var(--text-muted);
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            border-radius: 8px;
+            border: 2px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 10px;
             cursor: pointer;
-            margin-bottom: 30px;
-            transition: all 0.2s ease;
+            margin-bottom: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
         }
+        .back-btn:hover { color: var(--text-main); border-color: var(--text-main); transform: translateX(-5px); }
 
-        .back-btn:hover { color: var(--text-main); border-color: var(--text-muted); }
-
-        /* Calculator specific styles */
-        .layout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        @media (max-width: 768px) { .layout-grid { grid-template-columns: 1fr; } }
-        .input-group, .output-group { background: #0a0a0a; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
-        label { display: inline-block; width: 60%; font-size: 14px; margin-bottom: 12px; color: var(--text-muted); }
-        input { background: var(--bg-color); color: var(--accent); padding: 8px 12px; width: 30%; border: 1px solid var(--border); border-radius: 4px; font-family: monospace; }
-        .action-btn { background: transparent; color: var(--accent); border: 2px solid var(--accent); padding: 15px 30px; text-transform: uppercase; border-radius: 4px; cursor: pointer; width: 100%; transition: all 0.3s ease; }
-        .action-btn:hover { background: var(--accent); color: var(--bg-color); }
-        .output-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #1a1a1a; padding-bottom: 8px; }
-        .output-row:last-child { border-bottom: none; }
-        .output-label { color: var(--text-muted); font-size: 14px; }
-        .output-value { color: #fff; font-family: monospace; font-size: 16px; }
-        .highlight { color: var(--accent); font-weight: bold; }
-        .image-container img { max-width: 100%; border-radius: 4px; }
+        /* --- Calculator Specifics --- */
+        .layout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        @media (max-width: 900px) { .layout-grid { grid-template-columns: 1fr; } }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .input-group, .output-group { 
+            background: rgba(0,0,0,0.1); 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            border: 1px solid var(--border); 
+            transition: all 0.3s ease;
+        }
+        .input-group:hover { border-color: rgba(0, 240, 255, 0.3); }
+
+        label { display: inline-block; width: 65%; font-size: 16px; margin-bottom: 15px; color: var(--text-muted); font-weight: 500; }
+        input { 
+            background: var(--bg-color); 
+            color: var(--accent); 
+            padding: 10px 15px; 
+            width: 25%; 
+            border: 1px solid var(--border); 
+            border-radius: 6px; 
+            font-family: monospace; 
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+
+        .action-btn { 
+            background: var(--accent); 
+            color: #000; 
+            border: none; 
+            padding: 18px 30px; 
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            transition: all 0.3s ease; 
+            margin-top: 10px;
+        }
+        .action-btn:hover { background: var(--accent-hover); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 240, 255, 0.3); }
+
+        .output-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px dashed var(--border); padding-bottom: 12px; }
+        .output-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .output-label { color: var(--text-muted); font-size: 16px; }
+        .output-value { color: var(--text-main); font-family: monospace; font-size: 20px; font-weight: bold; }
+        .highlight { color: var(--accent); font-size: 22px; }
+
+        /* Animations */
+        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
     </style>
 </head>
 <body>
 
 <div class="container">
+    <button class="theme-toggle" onclick="toggleTheme()">☀️ / 🌙 Mode</button>
     
-    <div id="view-dashboard" class="page active" style="background: transparent; border: none; padding: 0;">
+    <div id="view-dashboard" class="page active" style="background: transparent; border: none; padding: 0; box-shadow: none;">
         <h1>Toolkit <span>Dashboard</span></h1>
         
         <div class="bento-grid">
@@ -142,7 +233,7 @@
             
             <div class="bento-card" onclick="openPage('page-machines')">
                 <div class="card-title">Machine Database</div>
-                <div class="card-desc">View and select capacities for available pulling machines (LI-556, etc).</div>
+                <div class="card-desc">View and select capacities for available pulling machines (LI-556, etc). [WAITING FOR SPREADSHEET DATA]</div>
             </div>
 
             <div class="bento-card" onclick="openPage('page-reference')">
@@ -152,7 +243,7 @@
             
             <div class="bento-card" onclick="openPage('page-other')">
                 <div class="card-title">Other Tools</div>
-                <div class="card-desc">Space reserved for additional spreadsheet tabs.</div>
+                <div class="card-desc">Space reserved for additional spreadsheet tabs. [WAITING FOR SPREADSHEET DATA]</div>
             </div>
         </div>
     </div>
@@ -164,39 +255,37 @@
         <div class="layout-grid">
             <div>
                 <div class="input-group">
-                    <label>Vessel Height (H) [m]:</label> <input type="number" id="vessel_H" value="24.2"><br>
-                    <label>Rotation Point (h) [m]:</label> <input type="number" id="rot_h" value="7"><br>
-                    <label>Attachment Height (A) [m]:</label> <input type="number" id="att_A" value="22"><br>
-                    <label>Base Flange OD (D) [m]:</label> <input type="number" id="base_D" value="5.7"><br>
-                    <label>Vessel Weight (W) [t]:</label> <input type="number" id="weight_W" value="99"><br>
-                    <label>Excavator Pull Ht (P) [m]:</label> <input type="number" id="pull_P" value="0.6"><br>
-                    <label>Machine Standoff (S) [m]:</label> <input type="number" id="standoff_S" value="52"><br>
+                    <label>Vessel Height (H) [m]:</label> <input type="number" id="vessel_H" value="24.2" step="0.1"><br>
+                    <label>Rotation Point (h) [m]:</label> <input type="number" id="rot_h" value="7" step="0.1"><br>
+                    <label>Attachment Height (A) [m]:</label> <input type="number" id="att_A" value="22" step="0.1"><br>
+                    <label>Base Flange OD (D) [m]:</label> <input type="number" id="base_D" value="5.7" step="0.1"><br>
+                    <label>Vessel Weight (W) [t]:</label> <input type="number" id="weight_W" value="99" step="0.1"><br>
+                    <label>Excavator Pull Ht (P) [m]:</label> <input type="number" id="pull_P" value="0.6" step="0.1"><br>
+                    <label>Machine Standoff (S) [m]:</label> <input type="number" id="standoff_S" value="52" step="0.1"><br>
                 </div>
 
                 <div class="input-group">
-                    <label>Pull Capacity (Fcap) [t]:</label> <input type="number" id="f_cap" value="28.1345"><br>
+                    <label>Pull Capacity (Fcap) [t]:</label> <input type="number" id="f_cap" value="28.1345" step="0.0001"><br>
                 </div>
                 
                 <button class="action-btn" onclick="calculateForces()">Run Calculation</button>
             </div>
 
             <div>
-                <div class="image-container" style="background: #0a0a0a; padding: 10px; border-radius: 8px; border: 1px solid #222;">
-                    <img src="diagram.png" alt="Reference Diagram">
+                <div style="background: var(--panel-bg); padding: 10px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+                    <img src="diagram.png" alt="Reference Diagram" style="max-width: 100%; border-radius: 8px;">
                 </div>
-            </div>
-        </div>
-
-        <div id="results" style="display: none; margin-top: 30px;">
-            <div class="layout-grid">
-                <div class="output-group">
-                    <div class="output-row"><span class="output-label">Stabilising Moment (Ms):</span> <span class="output-value" id="out_Ms"></span></div>
-                    <div class="output-row"><span class="output-label">Net Tension (FR):</span> <span class="output-value" id="out_FR"></span></div>
-                    <div class="output-row"><span class="output-label">Recommended Pull (RPF):</span> <span class="output-value highlight" id="out_RPF"></span></div>
-                </div>
-                <div class="output-group">
-                    <div class="output-row"><span class="output-label">Capacity Ratio:</span> <span class="output-value highlight" id="out_ratio"></span></div>
-                    <div class="output-row"><span class="output-label">System Status:</span> <span class="output-value" id="out_ratio_status"></span></div>
+                
+                <div id="results" style="display: none; margin-top: 20px; animation: slideUpFade 0.5s ease;">
+                    <div class="output-group">
+                        <div class="output-row"><span class="output-label">Stabilising Moment (Ms):</span> <span class="output-value" id="out_Ms"></span></div>
+                        <div class="output-row"><span class="output-label">Net Tension (FR):</span> <span class="output-value" id="out_FR"></span></div>
+                        <div class="output-row"><span class="output-label">Recommended Pull (RPF):</span> <span class="output-value highlight" id="out_RPF"></span></div>
+                    </div>
+                    <div class="output-group" id="status-group">
+                        <div class="output-row"><span class="output-label">Capacity Ratio:</span> <span class="output-value highlight" id="out_ratio"></span></div>
+                        <div class="output-row"><span class="output-label">System Status:</span> <span class="output-value" id="out_ratio_status"></span></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -205,34 +294,48 @@
     <div id="page-machines" class="page">
         <button class="back-btn" onclick="openPage('view-dashboard')">← Back to Dashboard</button>
         <h2>Machine Database</h2>
-        <p style="color: var(--text-muted);">Data required to populate this section.</p>
+        <div class="input-group" style="text-align: center; padding: 50px;">
+            <h3 style="color: var(--accent);">Awaiting Spreadsheet Data</h3>
+            <p style="color: var(--text-muted);">Please paste the contents of the 'Machines' tab from your Excel file to populate this database.</p>
         </div>
+    </div>
 
     <div id="page-reference" class="page">
         <button class="back-btn" onclick="openPage('view-dashboard')">← Back to Dashboard</button>
         <h2>Assumptions & Rigging</h2>
-        <div style="color: var(--text-muted); line-height: 1.6;">
-            <ul>
-                <li>The vessel will rotate about the defined rotation point.</li>
-                <li>The vessel is stabilised by self weight alone.</li>
-                <li>Pull must be conducted under steady, pre-tensioned conditions.</li>
+        <div class="input-group" style="font-size: 18px; line-height: 1.8;">
+            <ul style="color: var(--text-muted);">
+                <li><strong style="color: var(--text-main);">1.</strong> The vessel will rotate about the defined rotation point.</li>
+                <li><strong style="color: var(--text-main);">2.</strong> The vessel centre of gravity is approximately coincident with the geometric centre of the base.</li>
+                <li><strong style="color: var(--text-main);">3.</strong> The vessel is stabilised by self weight alone. No allowance is made for grout adhesion, shear keys, bolts, etc.</li>
+                <li><strong style="color: var(--text-main);">4.</strong> The vessel is sufficiently strong to support its self weight during rotation and collapse.</li>
+                <li><strong style="color: var(--text-main);">5.</strong> Pulling is assumed to be conducted as a steady, pre-tensioned pull with no snatching or shock loading.</li>
             </ul>
         </div>
     </div>
 
     <div id="page-other" class="page">
         <button class="back-btn" onclick="openPage('view-dashboard')">← Back to Dashboard</button>
-        <h2>Other Spreadsheet Tools</h2>
-        <p style="color: var(--text-muted);">Awaiting data for additional tools.</p>
+        <h2>Additional Spreadsheet Tools</h2>
+        <div class="input-group" style="text-align: center; padding: 50px;">
+            <h3 style="color: var(--accent);">Awaiting Spreadsheet Data</h3>
+            <p style="color: var(--text-muted);">Paste the contents of any other tabs here to build out additional tools.</p>
+        </div>
     </div>
 
 </div>
 
 <script>
+    // Theme Toggle Logic
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+    }
+
     // Navigation Logic
     function openPage(pageId) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Calculator Logic
@@ -261,15 +364,23 @@
         document.getElementById('out_ratio').innerText = ratio.toFixed(2);
         
         const statusSpan = document.getElementById('out_ratio_status');
+        const statusGroup = document.getElementById('status-group');
+        
         if (ratio >= 1.0) {
             statusSpan.innerText = "PASS";
             statusSpan.style.color = "var(--pass)";
+            statusGroup.style.borderColor = "var(--pass)";
+            statusGroup.style.boxShadow = "inset 0 0 10px rgba(0, 255, 157, 0.1)";
         } else {
             statusSpan.innerText = "FAIL";
             statusSpan.style.color = "var(--fail)";
+            statusGroup.style.borderColor = "var(--fail)";
+            statusGroup.style.boxShadow = "inset 0 0 10px rgba(255, 42, 85, 0.1)";
         }
 
-        document.getElementById('results').style.display = 'block';
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.style.display = 'none'; // reset to trigger animation
+        setTimeout(() => { resultsDiv.style.display = 'block'; }, 10);
     }
 </script>
 
