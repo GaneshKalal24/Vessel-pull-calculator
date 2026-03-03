@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vessel Pull Force Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1, h2 { color: #0056b3; }
+        .section { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+        label { display: inline-block; width: 250px; font-weight: bold; margin-bottom: 5px; }
+        input { padding: 5px; width: 100px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .input-group { background-color: #fffde7; padding: 10px; border-radius: 4px; margin-bottom: 10px; border-left: 4px solid #fbc02d; }
+        .output-group { background-color: #e3f2fd; padding: 10px; border-radius: 4px; margin-bottom: 5px; border-left: 4px solid #1976d2; }
+        .pass { background-color: #c8e6c9; border-left-color: #388e3c; }
+        .fail { background-color: #ffcdd2; border-left-color: #d32f2f; }
+        .note { font-size: 0.9em; color: #666; font-style: italic; }
+        button { background-color: #0056b3; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #004494; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Altona - Vessel Pull Force Calculator</h1>
+    <p class="note">Based on original Demolition pull formulas.</p>
+
+    <div class="section">
+        <h2>Vessel and Pull Arrangement Details</h2>
+        <div class="input-group">
+            <label>Vessel Height (H) [m]:</label> <input type="number" id="vessel_H" value="24.2" step="0.1"><br>
+            <label>Rotation Point Height (h) [m]:</label> <input type="number" id="rot_h" value="7" step="0.1"><br>
+            <label>Attachment Height (A) [m]:</label> <input type="number" id="att_A" value="22" step="0.1"><br>
+            <label>Base Flange OD (D) [m]:</label> <input type="number" id="base_D" value="5.7" step="0.1"><br>
+            <label>Vessel Max Weight (W) [tonne]:</label> <input type="number" id="weight_W" value="99" step="0.1"><br>
+            <label>Excavator Pull Height (P) [m]:</label> <input type="number" id="pull_P" value="0.6" step="0.1"><br>
+            <label>Machine Standoff (S) [m]:</label> <input type="number" id="standoff_S" value="52" step="0.1"><br>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Machine Selection</h2>
+        <div class="input-group">
+            <label>Machine Pull Capacity (Fcap) [tonne]:</label> <input type="number" id="f_cap" value="28.1345" step="0.0001"><br>
+        </div>
+        <button onclick="calculateForces()">Calculate Pull Forces</button>
+    </div>
+
+    <div class="section" id="results" style="display:none;">
+        <h2>Pull Force Calculation Results</h2>
+        
+        <div class="output-group">
+            <label>Stabilising Moment (Ms):</label> <span id="out_Ms"></span> tonne.m<br>
+            <label>Min Net Hor Force (FH):</label> <span id="out_FH"></span> tonne<br>
+        </div>
+        
+        <div class="output-group">
+            <label>Rope Height Difference (ΔH):</label> <span id="out_deltaH"></span> m<br>
+            <label>Rope Length (L):</label> <span id="out_L"></span> m<br>
+            <label>Rope Inclination (θ):</label> <span id="out_theta"></span> degrees<br>
+        </div>
+
+        <div class="output-group">
+            <label>Uplift Force (FV):</label> <span id="out_FV"></span> tonne<br>
+            <label>Net Tension in Rope (FR):</label> <span id="out_FR"></span> tonne<br>
+            <label>De-Rating Factor (kexc):</label> <span id="out_kexc"></span><br>
+            <label>Recommended Pull Force (RPF):</label> <strong id="out_RPF"></strong> tonne<br>
+        </div>
+
+        <h3 style="margin-top: 20px;">Machine Selection Check</h3>
+        <div id="machineCheck" class="output-group">
+            <label>Capacity Ratio (Fcap/RPF):</label> <span id="out_ratio"></span> <span id="out_ratio_status"></span>
+        </div>
+
+        <h3 style="margin-top: 20px;">Rope Minimum Breaking Force</h3>
+        <div class="output-group">
+            <label>Max Rope Force (FR, max):</label> <span id="out_FRmax"></span> tonne<br>
+            <label>MBF (tonne):</label> <strong id="out_MBF_tonne"></strong> tonne<br>
+            <label>MBF (kN):</label> <strong id="out_MBF_kN"></strong> kN<br>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateForces() {
+        // 1. Get Inputs
+        const H = parseFloat(document.getElementById('vessel_H').value);
+        const h = parseFloat(document.getElementById('rot_h').value);
+        const A = parseFloat(document.getElementById('att_A').value);
+        const D = parseFloat(document.getElementById('base_D').value);
+        const W = parseFloat(document.getElementById('weight_W').value);
+        const P = parseFloat(document.getElementById('pull_P').value);
+        const S = parseFloat(document.getElementById('standoff_S').value);
+        const Fcap = parseFloat(document.getElementById('f_cap').value);
+
+        // Constants (from orange cells)
+        const kdem = 1.5;
+        const T = 1.25;
+        const FOS = 1.4285714285714286; 
+
+        // 2. Calculations
+        const Ms = W * D / 2; // W*D/2
+        const FH = Ms / A;    // Ms/A
+        
+        const deltaH = A + h - P; // A+h-P
+        const L = Math.sqrt(Math.pow(S, 2) + Math.pow(deltaH, 2)); // (S^2+ΔH^2)^1/2
+        
+        const theta_rad = Math.atan(deltaH / S); // Tan-1(ΔH/S)
+        const theta_deg = theta_rad * (180 / Math.PI); 
+        
+        const FV = FH * Math.tan(theta_rad); // FH*Tan(θ)
+        const FR = Math.sqrt(Math.pow(FH, 2) + Math.pow(FV, 2)); // (FH^2+FV^2)^1/2
+        
+        const kexc = FH / FR; // FH/FR
+        const RPF = FH * kdem * (1 / kexc); // FH*kdem*1/kexc
+        
+        const ratio = Fcap / RPF; // Fcap/RPF
+        
+        const FR_max = Fcap / kexc; 
+        const MBF_tonne = T * FOS * FR_max; // T*FOS*FR, max
+        const MBF_kN = MBF_tonne * 9.810000; 
+
+        // 3. Update UI
+        document.getElementById('out_Ms').innerText = Ms.toFixed(4);
+        document.getElementById('out_FH').innerText = FH.toFixed(4);
+        document.getElementById('out_deltaH').innerText = deltaH.toFixed(4);
+        document.getElementById('out_L').innerText = L.toFixed(4);
+        document.getElementById('out_theta').innerText = theta_deg.toFixed(4);
+        document.getElementById('out_FV').innerText = FV.toFixed(4);
+        document.getElementById('out_FR').innerText = FR.toFixed(4);
+        document.getElementById('out_kexc').innerText = kexc.toFixed(4);
+        document.getElementById('out_RPF').innerText = RPF.toFixed(4);
+        
+        document.getElementById('out_ratio').innerText = ratio.toFixed(4);
+        
+        const checkDiv = document.getElementById('machineCheck');
+        if (ratio >= 1.0) {
+            document.getElementById('out_ratio_status').innerText = "- PASS";
+            checkDiv.className = "output-group pass";
+        } else {
+            document.getElementById('out_ratio_status').innerText = "- FAIL";
+            checkDiv.className = "output-group fail";
+        }
+
+        document.getElementById('out_FRmax').innerText = FR_max.toFixed(4);
+        document.getElementById('out_MBF_tonne').innerText = MBF_tonne.toFixed(4);
+        document.getElementById('out_MBF_kN').innerText = MBF_kN.toFixed(4);
+
+        // Show Results
+        document.getElementById('results').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
