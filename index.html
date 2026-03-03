@@ -55,32 +55,61 @@
             padding-left: 10px;
         }
 
+        /* --- Tabs Styling --- */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .layout-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
         }
 
-        @media (max-width: 768px) {
-            .layout-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 768px) { .layout-grid { grid-template-columns: 1fr; } }
 
-        .image-placeholder {
+        .image-container {
             background: #111;
-            border: 1px dashed var(--accent);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
+            padding: 10px;
             text-align: center;
-            padding: 20px;
-            min-height: 250px;
-            transition: all 0.3s ease;
         }
         
-        /* If you add an image later, this will format it */
-        .image-placeholder img {
+        .image-container img {
             max-width: 100%;
             height: auto;
             border-radius: 4px;
@@ -92,23 +121,10 @@
             border-radius: 8px; 
             margin-bottom: 15px; 
             border: 1px solid var(--border);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .input-group:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.1);
-            border-color: rgba(0, 240, 255, 0.3);
-        }
-
-        label { 
-            display: inline-block; 
-            width: 60%; 
-            font-size: 14px; 
-            margin-bottom: 12px; 
-            color: var(--text-muted);
-        }
-
+        label { display: inline-block; width: 60%; font-size: 14px; margin-bottom: 12px; color: var(--text-muted); }
+        
         input { 
             background: var(--bg-color);
             color: var(--accent);
@@ -118,16 +134,9 @@
             border-radius: 4px; 
             font-family: monospace;
             font-size: 16px;
-            transition: all 0.3s ease;
         }
 
-        input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-        }
-
-        button { 
+        .action-btn { 
             background-color: transparent; 
             color: var(--accent); 
             border: 2px solid var(--accent); 
@@ -140,11 +149,9 @@
             width: 100%;
             margin-top: 20px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
-        button:hover { 
+        .action-btn:hover { 
             background-color: var(--accent); 
             color: var(--bg-color);
             box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
@@ -152,44 +159,25 @@
 
         .results-container {
             display: none;
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             margin-top: 40px;
             border-top: 1px solid var(--border);
             padding-top: 20px;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .output-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 8px;
-        }
-        
+        .output-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 8px; }
         .output-row:last-child { border-bottom: none; }
-
         .output-label { color: var(--text-muted); font-size: 14px; }
         .output-value { color: #fff; font-family: monospace; font-size: 16px; }
         .highlight { color: var(--accent); font-weight: bold; font-size: 18px; }
 
         .status-box {
-            padding: 15px;
-            border-radius: 4px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-            letter-spacing: 1px;
-            margin-top: 15px;
-            border: 1px solid transparent;
+            padding: 15px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 18px; letter-spacing: 1px; margin-top: 15px; border: 1px solid transparent;
         }
 
         .pass { background-color: rgba(0, 255, 157, 0.1); color: var(--pass); border-color: rgba(0, 255, 157, 0.3); }
         .fail { background-color: rgba(255, 0, 60, 0.1); color: var(--fail); border-color: rgba(255, 0, 60, 0.3); }
+
+        .ref-list li { margin-bottom: 10px; color: var(--text-muted); line-height: 1.5; }
 
     </style>
 </head>
@@ -198,74 +186,109 @@
 <div class="container">
     <h1>Altona Pull Force Calculator</h1>
 
-    <div class="layout-grid">
-        <div>
-            <h2>Vessel Arrangement</h2>
-            <div class="input-group">
-                <label>Vessel Height (H) [m]:</label> <input type="number" id="vessel_H" value="24.2" step="0.1"><br>
-                <label>Rotation Point (h) [m]:</label> <input type="number" id="rot_h" value="7" step="0.1"><br>
-                <label>Attachment Height (A) [m]:</label> <input type="number" id="att_A" value="22" step="0.1"><br>
-                <label>Base Flange OD (D) [m]:</label> <input type="number" id="base_D" value="5.7" step="0.1"><br>
-                <label>Vessel Weight (W) [t]:</label> <input type="number" id="weight_W" value="99" step="0.1"><br>
-                <label>Excavator Pull Ht (P) [m]:</label> <input type="number" id="pull_P" value="0.6" step="0.1"><br>
-                <label>Machine Standoff (S) [m]:</label> <input type="number" id="standoff_S" value="52" step="0.1"><br>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('calcTab')">Calculator</button>
+        <button class="tab-btn" onclick="openTab('refTab')">Reference Info</button>
+    </div>
+
+    <div id="calcTab" class="tab-content active">
+        <div class="layout-grid">
+            <div>
+                <h2>Vessel Arrangement</h2>
+                <div class="input-group">
+                    <label>Vessel Height (H) [m]:</label> <input type="number" id="vessel_H" value="24.2" step="0.1"><br>
+                    <label>Rotation Point (h) [m]:</label> <input type="number" id="rot_h" value="7" step="0.1"><br>
+                    <label>Attachment Height (A) [m]:</label> <input type="number" id="att_A" value="22" step="0.1"><br>
+                    <label>Base Flange OD (D) [m]:</label> <input type="number" id="base_D" value="5.7" step="0.1"><br>
+                    <label>Vessel Weight (W) [t]:</label> <input type="number" id="weight_W" value="99" step="0.1"><br>
+                    <label>Excavator Pull Ht (P) [m]:</label> <input type="number" id="pull_P" value="0.6" step="0.1"><br>
+                    <label>Machine Standoff (S) [m]:</label> <input type="number" id="standoff_S" value="52" step="0.1"><br>
+                </div>
+
+                <h2>Machine Data</h2>
+                <div class="input-group">
+                    <label>Pull Capacity (Fcap) [t]:</label> <input type="number" id="f_cap" value="28.1345" step="0.0001"><br>
+                </div>
+                
+                <button class="action-btn" onclick="calculateForces()">Run Calculation</button>
             </div>
 
-            <h2>Machine Data</h2>
-            <div class="input-group">
-                <label>Pull Capacity (Fcap) [t]:</label> <input type="number" id="f_cap" value="28.1345" step="0.0001"><br>
+            <div>
+                <h2>Reference Diagram</h2>
+                <div class="image-container">
+                    <img src="diagram.png" alt="Vessel Pull Diagram">
+                </div>
             </div>
-            
-            <button onclick="calculateForces()">Run Calculation</button>
         </div>
 
-        <div>
-            <h2>Reference Diagram</h2>
-            <div class="image-placeholder">
-                <p>Save your spreadsheet's diagram as an image (e.g., 'diagram.png'), upload it to GitHub, and replace this text with the HTML &lt;img&gt; tag.</p>
+        <div class="results-container" id="results">
+            <h2>Analysis Results</h2>
+            <div class="layout-grid">
+                <div>
+                    <div class="output-group">
+                        <div class="output-row"><span class="output-label">Stabilising Moment (Ms):</span> <span class="output-value" id="out_Ms"></span></div>
+                        <div class="output-row"><span class="output-label">Min Net Hor Force (FH):</span> <span class="output-value" id="out_FH"></span></div>
+                    </div>
+                    
+                    <div class="output-group">
+                        <div class="output-row"><span class="output-label">Rope Δ Height (ΔH):</span> <span class="output-value" id="out_deltaH"></span></div>
+                        <div class="output-row"><span class="output-label">Rope Length (L):</span> <span class="output-value" id="out_L"></span></div>
+                        <div class="output-row"><span class="output-label">Rope Inclination (θ):</span> <span class="output-value" id="out_theta"></span></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="output-group">
+                        <div class="output-row"><span class="output-label">Uplift Force (FV):</span> <span class="output-value" id="out_FV"></span></div>
+                        <div class="output-row"><span class="output-label">Net Tension (FR):</span> <span class="output-value" id="out_FR"></span></div>
+                        <div class="output-row"><span class="output-label">De-Rating (kexc):</span> <span class="output-value" id="out_kexc"></span></div>
+                        <div class="output-row"><span class="output-label">Recommended Pull (RPF):</span> <span class="output-value highlight" id="out_RPF"></span></div>
+                    </div>
+
+                    <div class="output-group">
+                        <div class="output-row"><span class="output-label">Max Rope Force (FR, max):</span> <span class="output-value" id="out_FRmax"></span></div>
+                        <div class="output-row"><span class="output-label">MBF (tonne):</span> <span class="output-value highlight" id="out_MBF_tonne"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="machineCheck" class="status-box">
+                Machine Capacity Ratio: <span id="out_ratio"></span> <span id="out_ratio_status"></span>
             </div>
         </div>
     </div>
 
-    <div class="results-container" id="results">
-        <h1>Analysis Results</h1>
-        
-        <div class="layout-grid">
-            <div>
-                <div class="output-group">
-                    <div class="output-row"><span class="output-label">Stabilising Moment (Ms):</span> <span class="output-value" id="out_Ms"></span></div>
-                    <div class="output-row"><span class="output-label">Min Net Hor Force (FH):</span> <span class="output-value" id="out_FH"></span></div>
-                </div>
-                
-                <div class="output-group">
-                    <div class="output-row"><span class="output-label">Rope Δ Height (ΔH):</span> <span class="output-value" id="out_deltaH"></span></div>
-                    <div class="output-row"><span class="output-label">Rope Length (L):</span> <span class="output-value" id="out_L"></span></div>
-                    <div class="output-row"><span class="output-label">Rope Inclination (θ):</span> <span class="output-value" id="out_theta"></span></div>
-                </div>
-            </div>
+    <div id="refTab" class="tab-content">
+        <h2>Rigging Notes</h2>
+        <ul class="ref-list">
+            [cite_start]<li>The MBF check applies to a single-leg wire rope sling complying with AS 1666.1[cite: 4].</li>
+            [cite_start]<li>Pull must be conducted under steady, pre-tensioned conditions with no snatching or shock loading[cite: 4].</li>
+            [cite_start]<li>If the element does not move as expected, the pull shall cease and the method be reassessed[cite: 4].</li>
+        </ul>
 
-            <div>
-                <div class="output-group">
-                    <div class="output-row"><span class="output-label">Uplift Force (FV):</span> <span class="output-value" id="out_FV"></span></div>
-                    <div class="output-row"><span class="output-label">Net Tension (FR):</span> <span class="output-value" id="out_FR"></span></div>
-                    <div class="output-row"><span class="output-label">De-Rating (kexc):</span> <span class="output-value" id="out_kexc"></span></div>
-                    <div class="output-row"><span class="output-label">Recommended Pull (RPF):</span> <span class="output-value highlight" id="out_RPF"></span></div>
-                </div>
-
-                <div class="output-group">
-                    <div class="output-row"><span class="output-label">Max Rope Force (FR, max):</span> <span class="output-value" id="out_FRmax"></span></div>
-                    <div class="output-row"><span class="output-label">MBF (tonne):</span> <span class="output-value highlight" id="out_MBF_tonne"></span></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="machineCheck" class="status-box">
-            Machine Capacity Ratio: <span id="out_ratio"></span> <span id="out_ratio_status"></span>
-        </div>
+        <h2>Assumptions</h2>
+        <ul class="ref-list">
+            [cite_start]<li>The vessel will rotate about the defined rotation point[cite: 4].</li>
+            [cite_start]<li>The vessel centre of gravity is approximately coincident with the geometric centre of the base[cite: 4, 5].</li>
+            [cite_start]<li>The vessel is stabilised by self weight alone, no allowance is made for grout adhesion, shear keys, bolts or other restraining forces[cite: 6].</li>
+            [cite_start]<li>The vessel is sufficiently strong to support it's self weight during rotation and collapse[cite: 6].</li>
+            [cite_start]<li>Pulling is assumed to be conducted as a steady, pre-tensioned pull with no snatching or shock loading[cite: 7].</li>
+            <li>Wind loading has not been considered. [cite_start]It is assumed all work will occur in light winds suitable for operation of Elevated Work Platforms[cite: 7].</li>
+            [cite_start]<li>The vessel is mounted on a rigid base which is capable of withstanding the forces imposed due to rotation[cite: 7].</li>
+        </ul>
     </div>
 </div>
 
 <script>
+    // Tab Switching Logic
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // Calculation Logic
     function calculateForces() {
         const H = parseFloat(document.getElementById('vessel_H').value);
         const h = parseFloat(document.getElementById('rot_h').value);
@@ -325,10 +348,8 @@
         document.getElementById('out_MBF_tonne').innerText = MBF_tonne.toFixed(2) + " t";
 
         const resultsDiv = document.getElementById('results');
-        resultsDiv.style.display = 'none'; // reset animation
-        setTimeout(() => {
-            resultsDiv.style.display = 'block';
-        }, 10);
+        resultsDiv.style.display = 'none'; 
+        setTimeout(() => { resultsDiv.style.display = 'block'; }, 10);
     }
 </script>
 
