@@ -6,420 +6,300 @@
     <title>Altona Demolition Toolkit</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* --- Premium Theme Variables --- */
         :root {
-            --bg-color: #050505;
-            --panel-bg: rgba(20, 20, 20, 0.7);
-            --panel-border: rgba(255, 255, 255, 0.1);
-            --accent: #00f0ff;
-            --accent-glow: rgba(0, 240, 255, 0.4);
-            --text-main: #f0f0f0;
-            --text-muted: #888888;
-            --pass: #00ff9d;
-            --warning: #ffcc00;
-            --fail: #ff2a55;
-            --glass-blur: blur(12px);
+            --bg-color: #050505; --panel-bg: rgba(20, 20, 20, 0.7); --panel-border: rgba(255, 255, 255, 0.1);
+            --accent: #00f0ff; --accent-glow: rgba(0, 240, 255, 0.4); --text-main: #f0f0f0; --text-muted: #888888;
+            --pass: #00ff9d; --warning: #ffcc00; --fail: #ff2a55; --glass-blur: blur(12px);
         }
-
-        /* --- Global & Mobile-First Styles --- */
+        body.light-mode {
+            --bg-color: #f0f2f5; --panel-bg: rgba(255, 255, 255, 0.9); --panel-border: #cccccc;
+            --accent: #0056b3; --accent-glow: rgba(0, 86, 179, 0.2); --text-main: #111111; --text-muted: #555555;
+            --pass: #008a55; --warning: #d39e00; --fail: #d32f2f;
+        }
         * { box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', 'Segoe UI', sans-serif; 
-            background: radial-gradient(circle at top left, #111, var(--bg-color) 80%);
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px 10px; 
-            min-height: 100vh;
-            display: flex; 
-            justify-content: center;
-        }
-
-        .container { max-width: 1000px; width: 100%; position: relative; }
-
-        h1 { 
-            font-size: clamp(28px, 5vw, 42px); /* Responsive font sizing */
-            margin-bottom: 30px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: radial-gradient(circle at top left, var(--panel-bg), var(--bg-color) 80%); color: var(--text-main); margin: 0; padding: 20px 10px; min-height: 100vh; display: flex; justify-content: center; transition: background 0.3s ease, color 0.3s ease; }
+        .container { max-width: 1100px; width: 100%; position: relative; }
+        .theme-toggle { position: absolute; top: 0; right: 0; background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--panel-border); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; text-transform: uppercase; z-index: 100; backdrop-filter: var(--glass-blur); }
+        h1 { font-size: clamp(28px, 5vw, 42px); margin-bottom: 30px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; }
         h1 span { color: var(--accent); font-weight: bold; text-shadow: 0 0 10px var(--accent-glow); }
         h2 { font-size: 20px; color: var(--text-main); border-left: 3px solid var(--accent); padding-left: 12px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;}
-
-        /* --- Glassmorphism Panels --- */
-        .panel { 
-            background: var(--panel-bg); 
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            padding: clamp(20px, 4vw, 40px); 
-            border-radius: 16px; 
-            border: 1px solid var(--panel-border); 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-        }
-
-        .layout-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 30px; 
-        }
-
-        /* --- Inputs & Controls --- */
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .bento-card { background: var(--panel-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--panel-border); border-radius: 16px; padding: 30px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: center; }
+        .bento-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); border-color: var(--accent); }
+        .card-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--text-main); }
+        .card-desc { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+        .card-large { grid-column: 1 / -1; }
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+        .panel { background: var(--panel-bg); backdrop-filter: var(--glass-blur); padding: clamp(20px, 4vw, 40px); border-radius: 16px; border: 1px solid var(--panel-border); box-shadow: 0 15px 35px rgba(0,0,0,0.3); margin-bottom: 30px; }
+        .back-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--panel-border); padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 20px; font-weight: bold; transition: all 0.2s ease; }
+        .back-btn:hover { color: var(--text-main); border-color: var(--text-main); }
+        .layout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .input-group { margin-bottom: 15px; position: relative; }
         label { display: block; font-size: 14px; margin-bottom: 8px; color: var(--text-muted); font-weight: 600; }
-        
-        input, select { 
-            background: rgba(0, 0, 0, 0.5); 
-            color: var(--accent); 
-            padding: 12px 15px; 
-            width: 100%; 
-            border: 1px solid var(--panel-border); 
-            border-radius: 8px; 
-            font-family: monospace; 
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
+        input, select { background: rgba(0, 0, 0, 0.2); color: var(--accent); padding: 12px 15px; width: 100%; border: 1px solid var(--panel-border); border-radius: 8px; font-family: monospace; font-size: 16px; }
         input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-        input[readonly] { color: var(--text-muted); cursor: not-allowed; }
-
-        /* Dynamic Warning Styles */
-        .warning-state input { border-color: var(--warning); box-shadow: 0 0 15px rgba(255, 204, 0, 0.3); color: var(--warning);}
+        .warning-state input { border-color: var(--warning); color: var(--warning);}
         .warning-msg { color: var(--warning); font-size: 12px; margin-top: 5px; display: none; font-weight: bold; }
-        .warning-state .warning-msg { display: block; animation: fadeIn 0.3s ease; }
-
-        /* --- Buttons --- */
-        .btn-row { display: flex; gap: 15px; margin-top: 25px; flex-wrap: wrap; }
-        button { 
-            flex: 1;
-            min-width: 200px;
-            background: transparent; 
-            color: var(--accent); 
-            border: 1px solid var(--accent); 
-            padding: 15px 20px; 
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-            position: relative;
-            overflow: hidden;
-        }
-        button::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0,240,255,0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        button:hover::before { left: 100%; }
-        button:hover { background: rgba(0, 240, 255, 0.1); box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-2px); }
-        
-        .btn-primary { background: var(--accent); color: #000; }
-        .btn-primary:hover { background: #00c3cc; color: #000; }
-
-        /* --- Results Output --- */
-        #results-area { display: none; animation: slideUp 0.5s ease; margin-top: 30px; }
-        .output-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--panel-border); padding: 12px 0; }
+        .warning-state .warning-msg { display: block; }
+        button.action-btn { background: var(--accent); color: #000; border: none; padding: 15px 20px; font-size: 16px; font-weight: bold; text-transform: uppercase; border-radius: 8px; cursor: pointer; width: 100%; transition: all 0.2s ease; margin-bottom: 10px; }
+        button.action-btn:hover { background: #00c3cc; transform: translateY(-2px); box-shadow: 0 5px 15px var(--accent-glow); }
+        .output-row { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding: 12px 0; }
         .output-row:last-child { border-bottom: none; }
         .output-label { color: var(--text-muted); font-size: 14px; }
-        .output-value { color: #fff; font-family: monospace; font-size: 18px; font-weight: bold; }
+        .output-value { color: var(--text-main); font-family: monospace; font-size: 18px; font-weight: bold; }
         .highlight { color: var(--accent); font-size: 20px; }
-        
-        .status-box { padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 20px; border: 1px solid transparent; text-transform: uppercase; letter-spacing: 2px;}
+        .status-box { padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 20px; border: 1px solid transparent; text-transform: uppercase; }
+        .table-container { overflow-x: auto; margin-top: 20px; border-radius: 8px; border: 1px solid var(--panel-border); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--panel-border); }
+        th { background: rgba(0,0,0,0.3); color: var(--accent); font-weight: bold; text-transform: uppercase; font-size: 14px; }
+        td { color: var(--text-main); font-size: 14px; font-family: monospace; }
+        tr:hover { background: rgba(255,255,255,0.05); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* PDF Specific Hide */
-        .pdf-only { display: none; }
-
-        /* Animations */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
+        /* --- PDF STRICT PRINT STYLING --- */
+        #print-template {
+            display: none; background: white; color: black; font-family: Arial, sans-serif; padding: 40px; width: 800px;
+        }
+        .pdf-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid black; padding-bottom: 10px; }
+        .pdf-header h1 { color: black; font-size: 24px; margin: 0 0 10px 0; text-shadow: none; letter-spacing: normal;}
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .pdf-table th, .pdf-table td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 14px; color: black; }
+        .pdf-table th { background-color: #f2f2f2; font-weight: bold; width: 60%; }
+        .pdf-signoff { margin-top: 40px; }
+        .pdf-signoff p { margin-bottom: 25px; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="container" id="app-container">
+    <button class="theme-toggle data-ignore" onclick="toggleTheme()">☀️/🌙 Mode</button>
     <h1 id="scramble-title">Altona <span>Toolkit</span></h1>
 
-    <div class="pdf-only" style="margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px;">
-        <h2>QA/QC Pull Force Analysis Report</h2>
-        <p><strong>Project:</strong> 269 - Altona Refinery Demolition | <strong>Client:</strong> Mobil</p>
-        <p><strong>Date Generated:</strong> <span id="pdf-date"></span></p>
+    <div id="view-dashboard" class="page active">
+        <div class="bento-grid">
+            <div class="bento-card card-large" onclick="openPage('page-calculator')">
+                <div class="card-title">Pull Force Calculator</div>
+                <div class="card-desc">Main demolition pull analysis, Ms calculations, and Machine Capacity checks.</div>
+            </div>
+            <div class="bento-card" onclick="openPage('page-machines')">
+                <div class="card-title">Machines Database</div>
+                <div class="card-desc">Excavator and winch pulling capacities.</div>
+            </div>
+            <div class="bento-card" onclick="openPage('page-wirerope')">
+                <div class="card-title">Wire Rope Specs</div>
+                <div class="card-desc">MBF and diameter specifications for wire ropes.</div>
+            </div>
+            <div class="bento-card" onclick="openPage('page-slings')">
+                <div class="card-title">Round Slings</div>
+                <div class="card-desc">WLL specifications and color coding for slings.</div>
+            </div>
+            <div class="bento-card" onclick="openPage('page-shackles')">
+                <div class="card-title">Shackles</div>
+                <div class="card-desc">WLL and pin diameter data for rated shackles.</div>
+            </div>
+            <div class="bento-card" onclick="openPage('page-as2601')">
+                <div class="card-title">AS 2601 & Rigging Notes</div>
+                <div class="card-desc">Demolition code compliance and project assumptions.</div>
+            </div>
+        </div>
     </div>
 
-    <div class="panel">
-        <div class="layout-grid">
-            <div>
-                <h2>Vessel Parameters</h2>
-                <div class="input-group">
-                    <label>Vessel Height (H) [m]:</label> 
-                    <input type="number" id="vessel_H" value="24.2" step="0.1" class="auto-save" oninput="checkSafety()">
-                </div>
-                <div class="input-group">
-                    <label>Rotation Point (h) [m]:</label> 
-                    <input type="number" id="rot_h" value="7" step="0.1" class="auto-save">
-                </div>
-                <div class="input-group">
-                    <label>Attachment Height (A) [m]:</label> 
-                    <input type="number" id="att_A" value="22" step="0.1" class="auto-save">
-                </div>
-                <div class="input-group">
-                    <label>Base Flange OD (D) [m]:</label> 
-                    <input type="number" id="base_D" value="5.7" step="0.1" class="auto-save">
-                </div>
-                <div class="input-group">
-                    <label>Vessel Max Weight (W) [tonne]:</label> 
-                    <input type="number" id="weight_W" value="99" step="0.1" class="auto-save">
-                </div>
-                
-                <h2 style="margin-top: 30px;">Rigging & Machine Setup</h2>
-                <div class="input-group">
-                    <label>Excavator Pull Ht (P) [m]:</label> 
-                    <input type="number" id="pull_P" value="0.6" step="0.1" class="auto-save">
-                </div>
-                
-                <div class="input-group" id="standoff-group">
-                    <label>Machine Standoff (S) [m]:</label> 
-                    <input type="number" id="standoff_S" value="52" step="0.1" class="auto-save" oninput="checkSafety()">
-                    <div class="warning-msg">⚠ Warning: Standoff is less than recommended 2H</div>
-                </div>
-
-                <div class="input-group">
-                    <label>Select Machine:</label>
-                    <select id="machine_select" class="auto-save" onchange="updateMachineCapacity()">
-                        <option value="LI-556">LI-556 (Altona Demolition Standard)</option>
-                        <option value="CAT-349">CAT 349F</option>
-                        <option value="EC480">Volvo EC480E</option>
-                        <option value="MANUAL">Custom Entry...</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Pull Capacity (Fcap) [tonne]:</label> 
-                    <input type="number" id="f_cap" value="28.1345" step="0.0001" class="auto-save" readonly>
-                </div>
-            </div>
-
-            <div>
-                <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; border: 1px solid var(--panel-border); text-align: center;">
-                    <img src="diagram.png" alt="Reference Diagram" style="max-width: 100%; border-radius: 8px;">
-                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">Fig 1: Vessel Demolition Pull Arrangement</p>
-                </div>
-
-                <div class="btn-row data-ignore">
-                    <button class="btn-primary" onclick="calculateForces()">Run Analysis</button>
-                    <button onclick="generatePDF()" id="pdf-btn" style="display:none;">Export PDF</button>
-                </div>
-
-                <div id="results-area">
-                    <h2>Analysis Output</h2>
-                    <div class="output-row"><span class="output-label">Stabilising Moment (Ms):</span> <span class="output-value" id="out_Ms"></span></div>
-                    <div class="output-row"><span class="output-label">Uplift Force (FV):</span> <span class="output-value" id="out_FV"></span></div>
-                    <div class="output-row"><span class="output-label">Net Tension (FR):</span> <span class="output-value" id="out_FR"></span></div>
-                    <div class="output-row"><span class="output-label">De-Rating Factor (kexc):</span> <span class="output-value" id="out_kexc"></span></div>
-                    <div class="output-row"><span class="output-label">Recommended Pull (RPF):</span> <span class="output-value highlight" id="out_RPF"></span></div>
-                    <div class="output-row"><span class="output-label">Rope MBF Reqd:</span> <span class="output-value" id="out_MBF"></span></div>
+    <div id="page-calculator" class="page">
+        <button class="back-btn data-ignore" onclick="openPage('view-dashboard')">← Back</button>
+        <div class="panel">
+            <div class="layout-grid">
+                <div>
+                    <h2>Vessel Parameters</h2>
+                    <div class="input-group"><label>Vessel Height (H) [m]:</label><input type="number" id="vessel_H" value="24.2" class="auto-save" oninput="checkSafety()"></div>
+                    <div class="input-group"><label>Rotation Point (h) [m]:</label><input type="number" id="rot_h" value="7" class="auto-save"></div>
+                    <div class="input-group"><label>Attachment Height (A) [m]:</label><input type="number" id="att_A" value="22" class="auto-save"></div>
+                    <div class="input-group"><label>Base Flange OD (D) [m]:</label><input type="number" id="base_D" value="5.7" class="auto-save"></div>
+                    <div class="input-group"><label>Vessel Max Weight (W) [t]:</label><input type="number" id="weight_W" value="99" class="auto-save"></div>
                     
-                    <div id="status-box" class="status-box">
-                        Capacity Ratio: <span id="out_ratio"></span> | <span id="out_ratio_status"></span>
+                    <h2 style="margin-top: 20px;">Rigging</h2>
+                    <div class="input-group"><label>Excavator Pull Ht (P) [m]:</label><input type="number" id="pull_P" value="0.6" class="auto-save"></div>
+                    <div class="input-group" id="standoff-group">
+                        <label>Machine Standoff (S) [m]:</label><input type="number" id="standoff_S" value="52" class="auto-save" oninput="checkSafety()">
+                        <div class="warning-msg">⚠ Warning: Standoff is < 2H</div>
+                    </div>
+                    <div class="input-group">
+                        <label>Select Machine:</label>
+                        <select id="machine_select" class="auto-save" onchange="updateMachineCapacity()">
+                            <option value="LI-1300">Kobelco SK1300D LC (82.29t)</option>
+                            <option value="LI-750">Volvo EC750E HR (48.11t)</option>
+                            <option value="LI-571">Volvo EC480D L (33.64t)</option>
+                            <option value="LI-556" selected>Volvo EC380D L (28.13t)</option>
+                            <option value="MANUAL">Custom Entry...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Machine Pull Cap (Fcap) [t]:</label><input type="number" id="f_cap" value="28.1345" class="auto-save" readonly>
+                    </div>
+                </div>
+                <div>
+                    <button class="action-btn data-ignore" onclick="calculateForces()">Run Analysis</button>
+                    <button class="action-btn data-ignore" onclick="generatePDF()" id="pdf-btn" style="display:none; background: transparent; border: 1px solid var(--accent); color: var(--accent);">Export PDF Report</button>
+                    
+                    <div id="results-area" style="display:none; margin-top: 20px;">
+                        <h2>Results</h2>
+                        <div class="output-row"><span class="output-label">Stabilising Moment (Ms):</span><span class="output-value" id="out_Ms"></span></div>
+                        <div class="output-row"><span class="output-label">Uplift Force (FV):</span><span class="output-value" id="out_FV"></span></div>
+                        <div class="output-row"><span class="output-label">Net Tension (FR):</span><span class="output-value" id="out_FR"></span></div>
+                        <div class="output-row"><span class="output-label">Recommended Pull (RPF):</span><span class="output-value highlight" id="out_RPF"></span></div>
+                        <div class="output-row"><span class="output-label">Rope MBF Reqd:</span><span class="output-value" id="out_MBF"></span></div>
+                        <div id="status-box" class="status-box">Ratio: <span id="out_ratio"></span> | <span id="out_ratio_status"></span></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="pdf-only" style="margin-top: 40px; border-top: 1px dashed #333; padding-top: 20px;">
-        <h3>Approval Sign-Off</h3>
-        <p style="margin-bottom: 30px;">Completed By: ___________________________ Date: _________ Signed: _________</p>
-        <p>Checked By: ___________________________ Date: _________ Signed: _________</p>
+
+    <div id="page-machines" class="page"><button class="back-btn" onclick="openPage('view-dashboard')">← Back</button><div class="panel"><h2>Machines Database</h2><div class="table-container" id="table-machines"></div></div></div>
+    <div id="page-wirerope" class="page"><button class="back-btn" onclick="openPage('view-dashboard')">← Back</button><div class="panel"><h2>Wire Rope Specifications</h2><div class="table-container" id="table-wirerope"></div></div></div>
+    <div id="page-slings" class="page"><button class="back-btn" onclick="openPage('view-dashboard')">← Back</button><div class="panel"><h2>Round Slings Database</h2><div class="table-container" id="table-slings"></div></div></div>
+    <div id="page-shackles" class="page"><button class="back-btn" onclick="openPage('view-dashboard')">← Back</button><div class="panel"><h2>Shackles Database</h2><div class="table-container" id="table-shackles"></div></div></div>
+    <div id="page-as2601" class="page"><button class="back-btn" onclick="openPage('view-dashboard')">← Back</button><div class="panel"><h2>AS 2601 & Project Notes</h2><div class="table-container" id="table-as2601"></div></div></div>
+
+</div>
+
+<div id="print-template">
+    <div class="pdf-header">
+        <h1>QA/QC Pull Force Analysis Report</h1>
+        <p><strong>Project:</strong> 269 - Altona Refinery Demolition | <strong>Client:</strong> Mobil</p>
+        <p><strong>Date Generated:</strong> <span id="print-date"></span></p>
+    </div>
+
+    <h3>1. Input Parameters</h3>
+    <table class="pdf-table">
+        <tr><th>Vessel Height (H)</th><td id="pr_vessel_H"></td></tr>
+        <tr><th>Rotation Point (h)</th><td id="pr_rot_h"></td></tr>
+        <tr><th>Attachment Height (A)</th><td id="pr_att_A"></td></tr>
+        <tr><th>Base Flange OD (D)</th><td id="pr_base_D"></td></tr>
+        <tr><th>Vessel Max Weight (W)</th><td id="pr_weight_W"></td></tr>
+        <tr><th>Excavator Pull Ht (P)</th><td id="pr_pull_P"></td></tr>
+        <tr><th>Machine Standoff (S)</th><td id="pr_standoff_S"></td></tr>
+        <tr><th>Machine Pull Cap (Fcap)</th><td id="pr_f_cap"></td></tr>
+    </table>
+
+    <h3>2. Engineering Results</h3>
+    <table class="pdf-table">
+        <tr><th>Stabilising Moment (Ms)</th><td id="pr_out_Ms"></td></tr>
+        <tr><th>Uplift Force (FV)</th><td id="pr_out_FV"></td></tr>
+        <tr><th>Net Tension in Rope (FR)</th><td id="pr_out_FR"></td></tr>
+        <tr><th>Recommended Pull Force (RPF)</th><td id="pr_out_RPF" style="font-weight: bold;"></td></tr>
+        <tr><th>Minimum Breaking Force Reqd (MBF)</th><td id="pr_out_MBF"></td></tr>
+        <tr><th>Capacity Ratio (Fcap/RPF)</th><td id="pr_out_ratio"></td></tr>
+        <tr><th>System Status</th><td id="pr_out_ratio_status" style="font-weight: bold;"></td></tr>
+    </table>
+
+    <div class="pdf-signoff">
+        <h3>3. Approval Sign-Off</h3>
+        <p><strong>Completed By:</strong> ___________________________ <strong>Date:</strong> _________ <strong>Signed:</strong> _________</p>
+        <p><strong>Checked By:</strong> ___________________________ <strong>Date:</strong> _________ <strong>Signed:</strong> _________</p>
     </div>
 </div>
 
 <script>
-    // --- 1. Smart Machine Database ---
-    const machineDB = {
-        "LI-556": 28.1345,
-        "CAT-349": 24.5000,
-        "EC480": 26.2000
+    // --- APP LOGIC ---
+    function toggleTheme() { document.body.classList.toggle('light-mode'); }
+    function openPage(pageId) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); window.scrollTo(0,0); }
+    function checkSafety() { const S = parseFloat(document.getElementById('standoff_S').value) || 0; const H = parseFloat(document.getElementById('vessel_H').value) || 0; const group = document.getElementById('standoff-group'); if (S < (2 * H)) group.classList.add('warning-state'); else group.classList.remove('warning-state'); }
+
+    // Dropdown logic for extracted machine data
+    const machineCapacities = {
+        "LI-1300": 82.289,
+        "LI-750": 48.114,
+        "LI-571": 33.639,
+        "LI-556": 28.134
     };
 
     function updateMachineCapacity() {
         const select = document.getElementById('machine_select');
         const fcapInput = document.getElementById('f_cap');
-        
         if(select.value === "MANUAL") {
-            fcapInput.readOnly = false;
-            fcapInput.focus();
+            fcapInput.readOnly = false; fcapInput.focus();
         } else {
-            fcapInput.readOnly = true;
-            fcapInput.value = machineDB[select.value];
+            fcapInput.readOnly = true; fcapInput.value = machineCapacities[select.value];
         }
-        saveToLocal(); // Trigger save on dropdown change
+        localStorage.setItem('alt_f_cap', fcapInput.value);
     }
 
-    // --- 2. Dynamic Safety Checks ---
-    function checkSafety() {
-        const S = parseFloat(document.getElementById('standoff_S').value) || 0;
-        const H = parseFloat(document.getElementById('vessel_H').value) || 0;
-        const standoffGroup = document.getElementById('standoff-group');
-        
-        // Standoff must be >= 2H
-        if (S < (2 * H)) {
-            standoffGroup.classList.add('warning-state');
-        } else {
-            standoffGroup.classList.remove('warning-state');
-        }
-    }
-
-    // --- 3. "Site-Safe" Auto-Save (LocalStorage) ---
     const inputs = document.querySelectorAll('.auto-save');
+    inputs.forEach(input => { input.addEventListener('input', () => localStorage.setItem('alt_' + input.id, input.value)); const saved = localStorage.getItem('alt_' + input.id); if(saved) input.value = saved; });
 
-    function saveToLocal() {
-        inputs.forEach(input => {
-            localStorage.setItem('altona_' + input.id, input.value);
-        });
-    }
-
-    function loadFromLocal() {
-        inputs.forEach(input => {
-            const savedVal = localStorage.getItem('altona_' + input.id);
-            if (savedVal !== null) {
-                input.value = savedVal;
-            }
-        });
-        updateMachineCapacity(); // Ensure UI matches loaded dropdown state
-        checkSafety(); // Ensure warning highlights if saved data violates 2H rule
-    }
-
-    // Attach listeners to save on every keystroke/change
-    inputs.forEach(input => {
-        input.addEventListener('input', saveToLocal);
-        input.addEventListener('change', saveToLocal);
-    });
-
-    // --- 4. Calculation Engine ---
     function calculateForces() {
-        const W = parseFloat(document.getElementById('weight_W').value);
-        const D = parseFloat(document.getElementById('base_D').value);
-        const A = parseFloat(document.getElementById('att_A').value);
-        const h = parseFloat(document.getElementById('rot_h').value);
-        const P = parseFloat(document.getElementById('pull_P').value);
-        const S = parseFloat(document.getElementById('standoff_S').value);
-        const Fcap = parseFloat(document.getElementById('f_cap').value);
-
-        const kdem = 1.5; const T = 1.25; const FOS = 1.42857;
-
-        const Ms = W * D / 2; 
-        const FH = Ms / A;    
-        const deltaH = A + h - P; 
-        const theta_rad = Math.atan(deltaH / S); 
-        const FV = FH * Math.tan(theta_rad); 
-        const FR = Math.sqrt(Math.pow(FH, 2) + Math.pow(FV, 2)); 
-        const kexc = FH / FR; 
-        const RPF = FH * kdem * (1 / kexc); 
-        const ratio = Fcap / RPF; 
-        const MBF = T * FOS * (Fcap / kexc);
-
-        document.getElementById('out_Ms').innerText = Ms.toFixed(2) + " t.m";
-        document.getElementById('out_FV').innerText = FV.toFixed(2) + " t";
-        document.getElementById('out_FR').innerText = FR.toFixed(2) + " t";
-        document.getElementById('out_kexc').innerText = kexc.toFixed(3);
-        document.getElementById('out_RPF').innerText = RPF.toFixed(2) + " t";
-        document.getElementById('out_MBF').innerText = MBF.toFixed(2) + " t";
-        document.getElementById('out_ratio').innerText = ratio.toFixed(2);
-        
-        const statusSpan = document.getElementById('out_ratio_status');
-        const statusBox = document.getElementById('status-box');
-        
-        if (ratio >= 1.0) {
-            statusSpan.innerText = "SYSTEM PASS";
-            statusBox.style.color = "var(--pass)";
-            statusBox.style.backgroundColor = "rgba(0, 255, 157, 0.1)";
-            statusBox.style.borderColor = "var(--pass)";
-        } else {
-            statusSpan.innerText = "FAIL - REDUCE LOAD";
-            statusBox.style.color = "var(--fail)";
-            statusBox.style.backgroundColor = "rgba(255, 42, 85, 0.1)";
-            statusBox.style.borderColor = "var(--fail)";
-        }
-
-        document.getElementById('results-area').style.display = 'block';
-        document.getElementById('pdf-btn').style.display = 'block'; // Show PDF button after calc
+        const W = parseFloat(document.getElementById('weight_W').value); const D = parseFloat(document.getElementById('base_D').value); const A = parseFloat(document.getElementById('att_A').value); const h = parseFloat(document.getElementById('rot_h').value); const P = parseFloat(document.getElementById('pull_P').value); const S = parseFloat(document.getElementById('standoff_S').value); const Fcap = parseFloat(document.getElementById('f_cap').value);
+        const Ms = W * D / 2; const FH = Ms / A; const deltaH = A + h - P; const theta_rad = Math.atan(deltaH / S); const FV = FH * Math.tan(theta_rad); const FR = Math.sqrt(Math.pow(FH, 2) + Math.pow(FV, 2)); const kexc = FH / FR; const RPF = FH * 1.5 * (1 / kexc); const ratio = Fcap / RPF; const MBF = 1.25 * 1.42857 * (Fcap / kexc);
+        document.getElementById('out_Ms').innerText = Ms.toFixed(2) + " t.m"; document.getElementById('out_FV').innerText = FV.toFixed(2) + " t"; document.getElementById('out_FR').innerText = FR.toFixed(2) + " t"; document.getElementById('out_RPF').innerText = RPF.toFixed(2) + " t"; document.getElementById('out_MBF').innerText = MBF.toFixed(2) + " t"; document.getElementById('out_ratio').innerText = ratio.toFixed(2);
+        const statusBox = document.getElementById('status-box'); const statusSpan = document.getElementById('out_ratio_status');
+        if (ratio >= 1.0) { statusSpan.innerText = "PASS"; statusBox.style.color = "var(--pass)"; statusBox.style.borderColor = "var(--pass)"; } else { statusSpan.innerText = "FAIL"; statusBox.style.color = "var(--fail)"; statusBox.style.borderColor = "var(--fail)"; }
+        document.getElementById('results-area').style.display = 'block'; document.getElementById('pdf-btn').style.display = 'block';
     }
 
-    // --- 5. PDF Generation (html2pdf) ---
     function generatePDF() {
-        // Set today's date for the report
-        const today = new Date();
-        document.getElementById('pdf-date').innerText = today.toLocaleDateString('en-AU');
-
-        // Temporarily reveal PDF-only elements and hide UI buttons
-        document.querySelectorAll('.pdf-only').forEach(el => el.style.display = 'block');
-        document.querySelectorAll('.data-ignore').forEach(el => el.style.display = 'none');
+        // 1. Map input values to the hidden print template
+        document.getElementById('print-date').innerText = new Date().toLocaleDateString('en-AU');
+        document.getElementById('pr_vessel_H').innerText = document.getElementById('vessel_H').value + " m";
+        document.getElementById('pr_rot_h').innerText = document.getElementById('rot_h').value + " m";
+        document.getElementById('pr_att_A').innerText = document.getElementById('att_A').value + " m";
+        document.getElementById('pr_base_D').innerText = document.getElementById('base_D').value + " m";
+        document.getElementById('pr_weight_W').innerText = document.getElementById('weight_W').value + " tonne";
+        document.getElementById('pr_pull_P').innerText = document.getElementById('pull_P').value + " m";
+        document.getElementById('pr_standoff_S').innerText = document.getElementById('standoff_S').value + " m";
+        document.getElementById('pr_f_cap').innerText = document.getElementById('f_cap').value + " tonne";
         
-        // Format body for light-mode printing
+        // 2. Map output values
+        document.getElementById('pr_out_Ms').innerText = document.getElementById('out_Ms').innerText;
+        document.getElementById('pr_out_FV').innerText = document.getElementById('out_FV').innerText;
+        document.getElementById('pr_out_FR').innerText = document.getElementById('out_FR').innerText;
+        document.getElementById('pr_out_RPF').innerText = document.getElementById('out_RPF').innerText;
+        document.getElementById('pr_out_MBF').innerText = document.getElementById('out_MBF').innerText;
+        document.getElementById('pr_out_ratio').innerText = document.getElementById('out_ratio').innerText;
+        document.getElementById('pr_out_ratio_status').innerText = document.getElementById('out_ratio_status').innerText;
+
+        // 3. Temporarily show the template, hide the UI, generate, and swap back
         const app = document.getElementById('app-container');
-        app.style.color = "#000";
-        app.style.background = "#fff";
+        const printTemplate = document.getElementById('print-template');
+        app.style.display = 'none';
+        printTemplate.style.display = 'block';
 
-        const opt = {
-            margin:       10,
-            filename:     'Altona_Pull_Force_Report.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        // Generate PDF, then revert UI changes
-        html2pdf().set(opt).from(app).save().then(() => {
-            document.querySelectorAll('.pdf-only').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.data-ignore').forEach(el => el.style.display = 'flex');
-            app.style.color = "";
-            app.style.background = "";
+        html2pdf().set({ margin: 15, filename: 'QA_QC_Pull_Force_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(printTemplate).save().then(() => {
+            printTemplate.style.display = 'none';
+            app.style.display = 'block';
         });
     }
 
-    // --- 6. Cyberpunk Text Scramble Effect ---
-    class TextScramble {
-        constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#_'; this.update = this.update.bind(this); }
-        setText(newText) {
-            const oldText = this.el.innerText;
-            const length = Math.max(oldText.length, newText.length);
-            const promise = new Promise((resolve) => this.resolve = resolve);
-            this.queue = [];
-            for (let i = 0; i < length; i++) {
-                const from = oldText[i] || ''; const to = newText[i] || '';
-                const start = Math.floor(Math.random() * 40); const end = start + Math.floor(Math.random() * 40);
-                this.queue.push({ from, to, start, end });
-            }
-            cancelAnimationFrame(this.frameRequest);
-            this.frame = 0; this.update(); return promise;
-        }
-        update() {
-            let output = ''; let complete = 0;
-            for (let i = 0, n = this.queue.length; i < n; i++) {
-                let { from, to, start, end, char } = this.queue[i];
-                if (this.frame >= end) { complete++; output += to; } 
-                else if (this.frame >= start) {
-                    if (!char || Math.random() < 0.28) { char = this.randomChar(); this.queue[i].char = char; }
-                    output += `<span style="color:var(--text-muted)">${char}</span>`;
-                } else { output += from; }
-            }
-            this.el.innerHTML = output;
-            if (complete === this.queue.length) { this.resolve(); } 
-            else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
-        }
-        randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; }
+    function buildTable(containerId, headers, dataRows) {
+        let html = '<table><thead><tr>'; headers.forEach(h => html += `<th>${h}</th>`); html += '</tr></thead><tbody>';
+        dataRows.forEach(row => { html += '<tr>'; row.forEach(cell => html += `<td>${cell}</td>`); html += '</tr>'; });
+        html += '</tbody></table>'; document.getElementById(containerId).innerHTML = html;
     }
 
-    // Initialization on Page Load
-    window.onload = function() {
-        loadFromLocal(); // Restore inputs
-        
-        // Trigger scramble animation
-        const titleSpan = document.querySelector('#scramble-title span');
-        const fx = new TextScramble(titleSpan);
-        setTimeout(() => { fx.setText('Toolkit'); }, 500);
-    };
+    // =========================================================================
+    // INSERT YOUR DATA HERE
+    // =========================================================================
+    
+    // 1. MACHINES DATA (Extracted from your CSV!)
+    const machineHeaders = ["Plant No.", "Make", "Model", "Pull Capacity (t)"];
+    const machineData = [
+        ["LI-523", "Kobelco", "SK1300D LC", "82.28"],
+        ["LI-750", "Volvo", "EC750E HR", "48.11"],
+        ["LI-571", "Volvo", "EC480D L", "33.64"],
+        ["LI-556", "Volvo", "EC380D L", "28.13"]
+    ];
 
+    // Initialize
+    window.onload = () => {
+        buildTable('table-machines', machineHeaders, machineData);
+        // buildTable('table-wirerope', wireHeaders, wireData);
+        // buildTable('table-slings', slingHeaders, slingData);
+        // buildTable('table-shackles', shackleHeaders, shackleData);
+        // buildTable('table-as2601', notesHeaders, notesData);
+        checkSafety();
+        updateMachineCapacity();
+    };
 </script>
 </body>
 </html>
