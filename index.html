@@ -58,17 +58,38 @@
         tr:hover { background: rgba(255,255,255,0.05); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- PDF STRICT PRINT STYLING --- */
-        #print-template {
-            display: none; background: white; color: black; font-family: Arial, sans-serif; padding: 40px; width: 800px;
-        }
-        .pdf-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid black; padding-bottom: 10px; }
-        .pdf-header h1 { color: black; font-size: 24px; margin: 0 0 10px 0; text-shadow: none; letter-spacing: normal;}
-        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .pdf-table th, .pdf-table td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 14px; color: black; }
-        .pdf-table th { background-color: #f2f2f2; font-weight: bold; width: 60%; }
-        .pdf-signoff { margin-top: 40px; }
-        .pdf-signoff p { margin-bottom: 25px; font-size: 14px; }
+        /* --- PDF STRICT ENGINEERING PRINT STYLING --- */
+        #print-template { display: none; background: white; color: black; font-family: 'Helvetica', 'Arial', sans-serif; padding: 20px; width: 800px; font-size: 12px; }
+        .pdf-title-block { border: 2px solid #000; margin-bottom: 20px; display: grid; grid-template-columns: 2fr 1fr; }
+        .pdf-title-block .left-block { padding: 15px; border-right: 2px solid #000; }
+        .pdf-title-block .right-block { padding: 15px; }
+        .pdf-title-block h1 { color: #000; font-size: 20px; margin: 0 0 10px 0; font-weight: bold; text-shadow: none; letter-spacing: normal;}
+        .pdf-title-block h2 { color: #000; font-size: 14px; margin: 0 0 5px 0; border: none; padding: 0; }
+        .pdf-title-block p { margin: 3px 0; font-size: 11px; }
+        
+        .pdf-section-title { background: #e0e0e0; border: 1px solid #000; padding: 5px 10px; font-weight: bold; font-size: 13px; margin-top: 20px; margin-bottom: 10px; }
+        
+        .pdf-flex-row { display: flex; gap: 20px; align-items: flex-start; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11px;}
+        .pdf-table th, .pdf-table td { border: 1px solid #000; padding: 6px; text-align: left; color: black; }
+        .pdf-table th { background-color: #f2f2f2; font-weight: bold; width: 50%; }
+        
+        .pdf-diagram { border: 1px solid #000; padding: 10px; text-align: center; background: #fff; width: 300px; }
+        .pdf-diagram img { max-width: 100%; height: auto; }
+        .pdf-diagram p { font-size: 10px; font-style: italic; margin-top: 5px; }
+
+        .pdf-assumptions { font-size: 10px; border: 1px solid #000; padding: 10px; margin-top: 10px; }
+        .pdf-assumptions ul { margin: 0; padding-left: 20px; }
+        
+        .pdf-signoff { border: 2px solid #000; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; }
+        .signoff-box { padding: 10px; border-right: 1px solid #000; }
+        .signoff-box:last-child { border-right: none; }
+        .signoff-box p { margin: 5px 0 25px 0; font-weight: bold; font-size: 11px; }
+        .signoff-line { border-top: 1px solid #000; padding-top: 2px; font-size: 10px; }
+        
+        .status-pass { color: green; font-weight: bold; }
+        .status-fail { color: red; font-weight: bold; }
+        .pdf-only { display: none; }
     </style>
 </head>
 <body>
@@ -112,6 +133,7 @@
             <div class="layout-grid">
                 <div>
                     <h2>Vessel Parameters</h2>
+                    <div class="input-group"><label>Vessel Name/No.:</label><input type="text" id="vessel_name" value="D63-0003" class="auto-save"></div>
                     <div class="input-group"><label>Vessel Height (H) [m]:</label><input type="number" id="vessel_H" value="24.2" class="auto-save" oninput="checkSafety()"></div>
                     <div class="input-group"><label>Rotation Point (h) [m]:</label><input type="number" id="rot_h" value="7" class="auto-save"></div>
                     <div class="input-group"><label>Attachment Height (A) [m]:</label><input type="number" id="att_A" value="22" class="auto-save"></div>
@@ -135,12 +157,12 @@
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>Machine Pull Cap (Fcap) [t]:</label><input type="number" id="f_cap" value="28.1345" class="auto-save" readonly>
+                        <label>Machine Pull Cap (Fcap) [t]:</label><input type="number" id="f_cap" value="28.13" class="auto-save" readonly>
                     </div>
                 </div>
                 <div>
                     <button class="action-btn data-ignore" onclick="calculateForces()">Run Analysis</button>
-                    <button class="action-btn data-ignore" onclick="generatePDF()" id="pdf-btn" style="display:none; background: transparent; border: 1px solid var(--accent); color: var(--accent);">Export PDF Report</button>
+                    <button class="action-btn data-ignore" onclick="generatePDF()" id="pdf-btn" style="display:none; background: transparent; border: 1px solid var(--accent); color: var(--accent);">Export Engineering Report PDF</button>
                     
                     <div id="results-area" style="display:none; margin-top: 20px;">
                         <h2>Results</h2>
@@ -165,39 +187,85 @@
 </div>
 
 <div id="print-template">
-    <div class="pdf-header">
-        <h1>QA/QC Pull Force Analysis Report</h1>
-        <p><strong>Project:</strong> 269 - Altona Refinery Demolition | <strong>Client:</strong> Mobil</p>
-        <p><strong>Date Generated:</strong> <span id="print-date"></span></p>
+    
+    <div class="pdf-title-block">
+        <div class="left-block">
+            <h1>OVERTURNING PULL FORCE ANALYSIS</h1>
+            <h2>Project: Altona Refinery Demolition</h2>
+            <p><strong>Project No:</strong> 269</p>
+            <p><strong>Client:</strong> Mobil</p>
+            <p><strong>Vessel ID:</strong> <span id="pr_vessel_name"></span></p>
+        </div>
+        <div class="right-block">
+            <p><strong>Doc No:</strong> CALC-001</p>
+            <p><strong>Rev:</strong> 0</p>
+            <p><strong>Date:</strong> <span id="print-date"></span></p>
+            <p><strong>Status:</strong> Issued for Review</p>
+        </div>
     </div>
 
-    <h3>1. Input Parameters</h3>
+    <div class="pdf-section-title">1.0 Reference Standards</div>
+    <p style="font-size: 11px; margin-bottom: 15px;">Calculations conform to requirements specified in <strong>AS 2601-2001</strong> (Demolition of structures), <strong>AS 1666.1</strong> (Wire-rope slings), and <strong>AS 3569</strong> (Steel wire ropes).</p>
+
+    <div class="pdf-flex-row">
+        <div style="flex: 1;">
+            <div class="pdf-section-title" style="margin-top: 0;">2.0 Input Parameters</div>
+            <table class="pdf-table">
+                <tr><th>Vessel Height (H)</th><td id="pr_vessel_H"></td></tr>
+                <tr><th>Rotation Point (h)</th><td id="pr_rot_h"></td></tr>
+                <tr><th>Attachment Height (A)</th><td id="pr_att_A"></td></tr>
+                <tr><th>Base Flange OD (D)</th><td id="pr_base_D"></td></tr>
+                <tr><th>Vessel Max Weight (W)</th><td id="pr_weight_W"></td></tr>
+                <tr><th>Excavator Pull Ht (P)</th><td id="pr_pull_P"></td></tr>
+                <tr><th>Machine Standoff (S)</th><td id="pr_standoff_S"></td></tr>
+                <tr><th>Machine Selected</th><td id="pr_machine_name"></td></tr>
+                <tr><th>Machine Pull Cap (Fcap)</th><td id="pr_f_cap"></td></tr>
+            </table>
+        </div>
+        
+        <div class="pdf-diagram">
+            <strong>Schematic Diagram</strong>
+            <img src="diagram.png" alt="[Upload diagram.png to repository]" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'150\'><rect width=\'200\' height=\'150\' fill=\'#f0f0f0\' stroke=\'#ccc\'/><text x=\'50%\' y=\'50%\' font-family=\'Arial\' font-size=\'12\' fill=\'#888\' text-anchor=\'middle\' dy=\'.3em\'>Schematic Image Placeholder</text></svg>';">
+            <p>Fig 1: Vertical Vessel Overturning Setup</p>
+        </div>
+    </div>
+
+    <div class="pdf-section-title">3.0 Calculation Results</div>
     <table class="pdf-table">
-        <tr><th>Vessel Height (H)</th><td id="pr_vessel_H"></td></tr>
-        <tr><th>Rotation Point (h)</th><td id="pr_rot_h"></td></tr>
-        <tr><th>Attachment Height (A)</th><td id="pr_att_A"></td></tr>
-        <tr><th>Base Flange OD (D)</th><td id="pr_base_D"></td></tr>
-        <tr><th>Vessel Max Weight (W)</th><td id="pr_weight_W"></td></tr>
-        <tr><th>Excavator Pull Ht (P)</th><td id="pr_pull_P"></td></tr>
-        <tr><th>Machine Standoff (S)</th><td id="pr_standoff_S"></td></tr>
-        <tr><th>Machine Pull Cap (Fcap)</th><td id="pr_f_cap"></td></tr>
+        <tr><th>Stabilising Moment (Ms) <br><span style="font-weight:normal; font-style:italic;">Ms = W × D / 2</span></th><td id="pr_out_Ms"></td></tr>
+        <tr><th>Uplift Force (FV) <br><span style="font-weight:normal; font-style:italic;">FV = FH × Tan(θ)</span></th><td id="pr_out_FV"></td></tr>
+        <tr><th>Net Tension in Rope (FR) <br><span style="font-weight:normal; font-style:italic;">FR = √(FH² + FV²)</span></th><td id="pr_out_FR"></td></tr>
+        <tr><th>Recommended Pull Force (RPF) <br><span style="font-weight:normal; font-style:italic;">RPF = FH × 1.5 × (1 / kexc)</span></th><td id="pr_out_RPF" style="font-weight: bold;"></td></tr>
+        <tr><th>Minimum Breaking Force Reqd (MBF) <br><span style="font-weight:normal; font-style:italic;">MBF = 1.25 × 1.428 × (Fcap / kexc)</span></th><td id="pr_out_MBF"></td></tr>
+        <tr><th>Capacity Ratio (Fcap / RPF)</th><td id="pr_out_ratio"></td></tr>
+        <tr><th>System Status</th><td id="pr_out_ratio_status" style="font-size: 14px;"></td></tr>
     </table>
 
-    <h3>2. Engineering Results</h3>
-    <table class="pdf-table">
-        <tr><th>Stabilising Moment (Ms)</th><td id="pr_out_Ms"></td></tr>
-        <tr><th>Uplift Force (FV)</th><td id="pr_out_FV"></td></tr>
-        <tr><th>Net Tension in Rope (FR)</th><td id="pr_out_FR"></td></tr>
-        <tr><th>Recommended Pull Force (RPF)</th><td id="pr_out_RPF" style="font-weight: bold;"></td></tr>
-        <tr><th>Minimum Breaking Force Reqd (MBF)</th><td id="pr_out_MBF"></td></tr>
-        <tr><th>Capacity Ratio (Fcap/RPF)</th><td id="pr_out_ratio"></td></tr>
-        <tr><th>System Status</th><td id="pr_out_ratio_status" style="font-weight: bold;"></td></tr>
-    </table>
+    <div class="pdf-section-title">4.0 Engineering Assumptions & Constraints</div>
+    <div class="pdf-assumptions">
+        <ul>
+            <li>The vessel will rotate about the defined rotation point.</li>
+            <li>The vessel centre of gravity is approximately coincident with the geometric centre of the base.</li>
+            <li>The vessel is stabilised by self-weight alone. No allowance is made for grout adhesion, shear keys, or bolts.</li>
+            <li>The vessel is sufficiently strong to support its self-weight during rotation and collapse.</li>
+            <li>Pulling is assumed to be conducted as a steady, pre-tensioned pull with no snatching or shock loading.</li>
+            <li>Wind loading has not been considered. Work must occur in light winds suitable for EWP operation.</li>
+        </ul>
+    </div>
 
     <div class="pdf-signoff">
-        <h3>3. Approval Sign-Off</h3>
-        <p><strong>Completed By:</strong> ___________________________ <strong>Date:</strong> _________ <strong>Signed:</strong> _________</p>
-        <p><strong>Checked By:</strong> ___________________________ <strong>Date:</strong> _________ <strong>Signed:</strong> _________</p>
+        <div class="signoff-box">
+            <p>Prepared By:</p>
+            <div class="signoff-line">Name / Signature / Date</div>
+        </div>
+        <div class="signoff-box">
+            <p>Checked By:</p>
+            <div class="signoff-line">Name / Signature / Date</div>
+        </div>
+        <div class="signoff-box">
+            <p>Approved By:</p>
+            <div class="signoff-line">Name / Signature / Date</div>
+        </div>
     </div>
 </div>
 
@@ -207,12 +275,12 @@
     function openPage(pageId) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); window.scrollTo(0,0); }
     function checkSafety() { const S = parseFloat(document.getElementById('standoff_S').value) || 0; const H = parseFloat(document.getElementById('vessel_H').value) || 0; const group = document.getElementById('standoff-group'); if (S < (2 * H)) group.classList.add('warning-state'); else group.classList.remove('warning-state'); }
 
-    // Dropdown logic for extracted machine data
+    // Dropdown logic
     const machineCapacities = {
-        "LI-1300": 82.289,
-        "LI-750": 48.114,
-        "LI-571": 33.639,
-        "LI-556": 28.134
+        "LI-1300": 82.29,
+        "LI-750": 48.11,
+        "LI-571": 33.64,
+        "LI-556": 28.13
     };
 
     function updateMachineCapacity() {
@@ -241,14 +309,19 @@
     function generatePDF() {
         // 1. Map input values to the hidden print template
         document.getElementById('print-date').innerText = new Date().toLocaleDateString('en-AU');
+        document.getElementById('pr_vessel_name').innerText = document.getElementById('vessel_name').value;
         document.getElementById('pr_vessel_H').innerText = document.getElementById('vessel_H').value + " m";
         document.getElementById('pr_rot_h').innerText = document.getElementById('rot_h').value + " m";
         document.getElementById('pr_att_A').innerText = document.getElementById('att_A').value + " m";
         document.getElementById('pr_base_D').innerText = document.getElementById('base_D').value + " m";
-        document.getElementById('pr_weight_W').innerText = document.getElementById('weight_W').value + " tonne";
+        document.getElementById('pr_weight_W').innerText = document.getElementById('weight_W').value + " t";
         document.getElementById('pr_pull_P').innerText = document.getElementById('pull_P').value + " m";
         document.getElementById('pr_standoff_S').innerText = document.getElementById('standoff_S').value + " m";
-        document.getElementById('pr_f_cap').innerText = document.getElementById('f_cap').value + " tonne";
+        
+        // Get dropdown text
+        const select = document.getElementById('machine_select');
+        document.getElementById('pr_machine_name').innerText = select.options[select.selectedIndex].text;
+        document.getElementById('pr_f_cap').innerText = document.getElementById('f_cap').value + " t";
         
         // 2. Map output values
         document.getElementById('pr_out_Ms').innerText = document.getElementById('out_Ms').innerText;
@@ -257,17 +330,29 @@
         document.getElementById('pr_out_RPF').innerText = document.getElementById('out_RPF').innerText;
         document.getElementById('pr_out_MBF').innerText = document.getElementById('out_MBF').innerText;
         document.getElementById('pr_out_ratio').innerText = document.getElementById('out_ratio').innerText;
-        document.getElementById('pr_out_ratio_status').innerText = document.getElementById('out_ratio_status').innerText;
+        
+        const ratioStatus = document.getElementById('out_ratio_status').innerText;
+        const statusEl = document.getElementById('pr_out_ratio_status');
+        statusEl.innerText = ratioStatus;
+        statusEl.className = ratioStatus === "PASS" ? "status-pass" : "status-fail";
 
-        // 3. Temporarily show the template, hide the UI, generate, and swap back
+        // 3. Render
         const app = document.getElementById('app-container');
         const printTemplate = document.getElementById('print-template');
         app.style.display = 'none';
         printTemplate.style.display = 'block';
 
-        html2pdf().set({ margin: 15, filename: 'QA_QC_Pull_Force_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(printTemplate).save().then(() => {
+        const opt = {
+            margin:       10, // mm
+            filename:     `Calc_PullForce_${document.getElementById('vessel_name').value}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(printTemplate).save().then(() => {
             printTemplate.style.display = 'none';
-            app.style.display = 'block';
+            app.style.display = 'flex'; // Restore app view
         });
     }
 
@@ -277,26 +362,30 @@
         html += '</tbody></table>'; document.getElementById(containerId).innerHTML = html;
     }
 
-    // =========================================================================
-    // INSERT YOUR DATA HERE
-    // =========================================================================
-    
-    // 1. MACHINES DATA (Extracted from your CSV!)
+    // --- DATABASES ---
     const machineHeaders = ["Plant No.", "Make", "Model", "Pull Capacity (t)"];
     const machineData = [
-        ["LI-523", "Kobelco", "SK1300D LC", "82.28"],
+        ["LI-523", "Kobelco", "SK1300D LC", "82.29"],
         ["LI-750", "Volvo", "EC750E HR", "48.11"],
         ["LI-571", "Volvo", "EC480D L", "33.64"],
         ["LI-556", "Volvo", "EC380D L", "28.13"]
     ];
 
-    // Initialize
+    const wireHeaders = ["Standard", "Note"];
+    const wireData = [["AS1666", "Wire Rope Slings - Part 1: Product Specification"]];
+    const slingHeaders = ["Standard", "Note"];
+    const slingData = [["AS4497", "Round Slings"]];
+    const shackleHeaders = ["Standard", "Note"];
+    const shackleData = [["AS2741", "Shackles"]];
+    const notesHeaders = ["Standard", "Note"];
+    const notesData = [["AS2601", "Demolition of Structures"]];
+
     window.onload = () => {
         buildTable('table-machines', machineHeaders, machineData);
-        // buildTable('table-wirerope', wireHeaders, wireData);
-        // buildTable('table-slings', slingHeaders, slingData);
-        // buildTable('table-shackles', shackleHeaders, shackleData);
-        // buildTable('table-as2601', notesHeaders, notesData);
+        buildTable('table-wirerope', wireHeaders, wireData);
+        buildTable('table-slings', slingHeaders, slingData);
+        buildTable('table-shackles', shackleHeaders, shackleData);
+        buildTable('table-as2601', notesHeaders, notesData);
         checkSafety();
         updateMachineCapacity();
     };
