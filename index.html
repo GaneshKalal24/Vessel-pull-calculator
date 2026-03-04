@@ -30,9 +30,7 @@
         
         /* Bento Grid */
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .bento-card { background: var(--panel-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--panel-border); border-radius: 16px; padding: 30px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
-        .bento-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent); transform: skewX(-20deg); transition: 0.5s; }
-        .bento-card:hover::before { left: 150%; }
+        .bento-card { background: var(--panel-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--panel-border); border-radius: 16px; padding: 30px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
         .bento-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: var(--accent); }
         .card-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--text-main); }
         .card-desc { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
@@ -44,7 +42,7 @@
         .back-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--panel-border); padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-bottom: 20px; font-weight: bold; transition: all 0.2s ease; }
         .back-btn:hover { color: var(--text-main); border-color: var(--text-main); }
         
-        .layout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
+        .layout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; }
         
         /* Inputs */
         .input-group { margin-bottom: 15px; position: relative; }
@@ -55,55 +53,63 @@
         .warning-msg { color: var(--warning); font-size: 12px; margin-top: 5px; display: none; font-weight: bold; }
         .warning-state .warning-msg { display: block; animation: shake 0.4s; }
         
-        button.action-btn { background: var(--accent); color: #000; border: none; padding: 18px 20px; font-size: 16px; font-weight: bold; text-transform: uppercase; border-radius: 8px; cursor: pointer; width: 100%; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin-bottom: 15px; letter-spacing: 1px;}
+        button.action-btn { background: var(--accent); color: #000; border: none; padding: 18px 20px; font-size: 16px; font-weight: bold; text-transform: uppercase; border-radius: 8px; cursor: pointer; width: 100%; transition: all 0.3s; margin-bottom: 15px; letter-spacing: 1px;}
         button.action-btn:hover { background: #00c3cc; transform: translateY(-3px); box-shadow: 0 10px 20px var(--accent-glow); }
         
         /* Results */
-        .results-wrapper { display: none; margin-top: 20px; border-top: 1px solid var(--panel-border); padding-top: 20px; }
+        .results-wrapper { display: none; margin-top: 20px; border-top: 1px solid var(--panel-border); padding-top: 20px; animation: fadeIn 0.5s ease; }
         .output-row { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding: 12px 0; }
         .output-row:last-child { border-bottom: none; }
         .output-label { color: var(--text-muted); font-size: 14px; }
         .output-value { color: var(--text-main); font-family: monospace; font-size: 18px; font-weight: bold; }
         .highlight { color: var(--accent); font-size: 22px; text-shadow: 0 0 10px var(--accent-glow); }
-        .status-box { padding: 20px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 20px; border: 2px solid transparent; text-transform: uppercase; font-size: 20px; letter-spacing: 2px; transition: all 0.3s; }
+        .status-box { padding: 20px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 20px; border: 2px solid transparent; text-transform: uppercase; font-size: 20px; letter-spacing: 2px; }
 
-        /* --- UI ANIMATIONS (THE SIMULATION) --- */
-        .simulation-box { width: 100%; height: 200px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid var(--panel-border); margin-bottom: 20px; position: relative; overflow: hidden; }
+        .diagram-box { background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; border: 1px solid var(--panel-border); text-align: center; margin-bottom: 20px; }
+        .diagram-box img { max-width: 100%; border-radius: 4px; }
+
+        /* --- ADVANCED SIMULATION CSS --- */
+        .simulation-container { display: none; margin-top: 40px; animation: fadeIn 0.5s ease; }
+        .simulation-box { width: 100%; height: 280px; background: linear-gradient(to bottom, rgba(10,10,20,0.8), rgba(0,0,0,0.9)); border-radius: 12px; border: 1px solid var(--panel-border); position: relative; overflow: hidden; }
         .sim-svg { width: 100%; height: 100%; }
         
-        /* Sim Elements */
-        .sim-ground { stroke: var(--panel-border); stroke-width: 2; }
-        .sim-excavator { fill: var(--text-muted); }
-        .sim-arm { stroke: var(--text-muted); stroke-width: 6; stroke-linecap: round; fill: none; }
-        .sim-vessel { fill: var(--accent); opacity: 0.8; transform-origin: 320px 180px; }
-        .sim-rope { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 4; }
+        .sim-ground { stroke: #333; stroke-width: 4; }
+        .sim-exc-body { fill: #f0b000; }
+        .sim-exc-track { fill: #222; stroke: #111; stroke-width: 2; rx: 8; }
+        .sim-exc-cab { fill: #111; opacity: 0.8; }
+        .sim-exc-arm { stroke: #d09000; stroke-width: 12; stroke-linecap: round; fill: none; stroke-linejoin: round; transition: all 1s ease; }
         
-        /* PASS Animation */
-        .anim-pass { border-color: var(--pass); box-shadow: 0 0 30px var(--pass-glow) inset; }
-        .anim-pass .sim-rope { stroke: var(--pass); stroke-width: 2; stroke-dasharray: 0; animation: rope-tighten 2s forwards; }
-        .anim-pass .sim-vessel { fill: var(--pass); animation: vessel-collapse 2s ease-in forwards; animation-delay: 0.5s;}
+        .sim-vessel-group { transform-origin: 550px 240px; transition: transform 2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sim-vessel-body { fill: var(--text-main); stroke: #555; stroke-width: 2; }
+        .sim-vessel-flange { fill: #444; }
         
-        /* FAIL Animation */
-        .anim-fail { border-color: var(--fail); box-shadow: 0 0 30px var(--fail-glow) inset; animation: shake-heavy 0.5s; }
-        .anim-fail .sim-rope { animation: rope-snap 0.5s forwards; }
-        .anim-fail .sim-vessel { fill: var(--fail); }
+        .sim-rope { stroke: var(--text-muted); stroke-width: 2; transition: all 0.5s; }
+        .sim-rope-broken { stroke: var(--fail); stroke-width: 3; stroke-dasharray: 10 5; opacity: 0; }
+        
+        .sim-strobe { fill: red; opacity: 0; }
+        .sim-dust { fill: rgba(200, 200, 200, 0.4); opacity: 0; }
 
-        @keyframes vessel-collapse {
-            0% { transform: rotate(0deg); }
-            10% { transform: rotate(-2deg); }
-            100% { transform: rotate(-85deg); opacity: 0; }
-        }
-        @keyframes rope-tighten {
-            0% { stroke-dasharray: 4; }
-            100% { stroke-dasharray: 0; }
-        }
-        @keyframes rope-snap {
-            0% { stroke: var(--warning); stroke-width: 3; stroke-dasharray: 0; }
-            50% { stroke: var(--fail); stroke-width: 5; }
-            100% { stroke: transparent; stroke-dasharray: 10 10; }
-        }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
-        @keyframes shake-heavy { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 20% { transform: translate(-10px, 5px) rotate(-1deg); } 40% { transform: translate(10px, -5px) rotate(1deg); } 60% { transform: translate(-10px, -5px) rotate(0deg); } 80% { transform: translate(10px, 5px) rotate(-1deg); } }
+        /* PASS ANIMATION */
+        .anim-pass { border-color: var(--pass); box-shadow: 0 0 40px var(--pass-glow) inset; }
+        .anim-pass .sim-rope { stroke: var(--pass); }
+        .anim-pass .sim-vessel-group { transform: rotate(-83deg); }
+        .anim-pass .sim-exc-arm { d: path("M 150 180 L 220 120 L 270 160"); } /* Arm pulls back slightly */
+        .anim-pass .sim-dust { animation: dust-cloud 2s ease-out forwards; animation-delay: 1.5s; }
+
+        /* FAIL ANIMATION */
+        .anim-fail { border-color: var(--fail); box-shadow: 0 0 40px var(--fail-glow) inset; animation: shake-screen 0.5s; }
+        .anim-fail .sim-vessel-group { animation: rock-vessel 1s ease-in-out forwards; }
+        .anim-fail .sim-rope { opacity: 0; }
+        .anim-fail .sim-rope-broken { opacity: 1; animation: snap-rope 0.5s forwards; }
+        .anim-fail .sim-strobe { animation: strobe-flash 0.3s infinite alternate; }
+        .anim-fail .sim-exc-body, .anim-fail .sim-exc-cab, .anim-fail .sim-exc-arm { animation: excavator-recoil 0.5s ease-out forwards; }
+
+        @keyframes dust-cloud { 0% { transform: scale(0.5) translateY(0); opacity: 0.8; } 100% { transform: scale(3) translateY(-20px); opacity: 0; } }
+        @keyframes rock-vessel { 0% { transform: rotate(0deg); } 20% { transform: rotate(-8deg); } 40% { transform: rotate(3deg); } 60% { transform: rotate(-2deg); } 100% { transform: rotate(0deg); } }
+        @keyframes snap-rope { 0% { d: path("M 280 140 L 510 60"); } 100% { d: path("M 250 160 L 350 180 M 450 120 L 510 60"); } }
+        @keyframes excavator-recoil { 0% { transform: translateX(0); } 20% { transform: translateX(-15px) rotate(-2deg); } 100% { transform: translateX(0) rotate(0deg); } }
+        @keyframes strobe-flash { 0% { opacity: 0; } 100% { opacity: 1; filter: drop-shadow(0 0 10px red); } }
+        @keyframes shake-screen { 0%, 100% { transform: translate(0,0); } 20% { transform: translate(-5px, 5px); } 40% { transform: translate(5px, -5px); } 60% { transform: translate(-5px, -5px); } 80% { transform: translate(5px, 5px); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Tables & PDF */
@@ -115,19 +121,20 @@
         tr:hover { background: rgba(255,255,255,0.05); }
         .pdf-only { display: none; }
         
-        /* PDF PRINT STYLING (Hidden in web UI) */
-        #print-template { display: none; background: white; color: black; font-family: 'Helvetica', 'Arial', sans-serif; padding: 20px; width: 800px; font-size: 12px; }
-        .pdf-title-block { border: 2px solid #000; margin-bottom: 20px; display: grid; grid-template-columns: 2fr 1fr; }
+        /* PDF PRINT STYLING - CALC PAD STYLE */
+        #print-template { display: none; background: white; color: black; font-family: 'Helvetica', 'Arial', sans-serif; padding: 20px; width: 800px; font-size: 12px; position: relative; }
+        #print-template::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px); background-size: 20px 20px; z-index: -1; opacity: 0.5; }
+        .pdf-title-block { border: 2px solid #000; margin-bottom: 20px; display: grid; grid-template-columns: 2fr 1fr; background: white; }
         .pdf-title-block .left-block { padding: 15px; border-right: 2px solid #000; }
         .pdf-title-block .right-block { padding: 15px; }
         .pdf-title-block h1 { color: #000; font-size: 20px; margin: 0 0 10px 0; font-weight: bold; }
         .pdf-title-block h2 { color: #000; font-size: 14px; margin: 0 0 5px 0; }
         .pdf-title-block p { margin: 3px 0; font-size: 11px; }
-        .pdf-section-title { background: #e0e0e0; border: 1px solid #000; padding: 5px 10px; font-weight: bold; font-size: 13px; margin-top: 20px; margin-bottom: 10px; }
-        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11px;}
+        .pdf-section-title { background: #d0d0d0; border: 1px solid #000; padding: 5px 10px; font-weight: bold; font-size: 13px; margin-top: 20px; margin-bottom: 10px; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11px; background: white;}
         .pdf-table th, .pdf-table td { border: 1px solid #000; padding: 6px; text-align: left; color: black; }
         .pdf-table th { background-color: #f2f2f2; font-weight: bold; width: 50%; }
-        .pdf-signoff { border: 2px solid #000; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; }
+        .pdf-signoff { border: 2px solid #000; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; background: white;}
         .signoff-box { padding: 10px; border-right: 1px solid #000; }
         .signoff-box:last-child { border-right: none; }
         .signoff-box p { margin: 5px 0 25px 0; font-weight: bold; font-size: 11px; }
@@ -192,26 +199,15 @@
                     <div class="input-group">
                         <label>Machine Pull Cap (Fcap) [t]:</label><input type="number" id="f_cap" value="28.13" class="auto-save" readonly>
                     </div>
+                    <button class="action-btn" onclick="calculateForces()" style="margin-top: 20px;">Run Analysis</button>
                 </div>
                 
                 <div>
-                    <button class="action-btn" onclick="calculateForces()">Run Analysis Simulation</button>
-                    <button class="action-btn" onclick="generatePDF()" id="pdf-btn" style="display:none; background: transparent; border: 2px solid var(--accent); color: var(--accent);">Export Engineering PDF</button>
-                    
-                    <div id="results-area" class="results-wrapper">
-                        
-                        <div class="simulation-box" id="sim-box">
-                            <svg viewBox="0 0 400 200" class="sim-svg">
-                                <line x1="0" y1="180" x2="400" y2="180" class="sim-ground"/>
-                                <rect x="30" y="140" width="50" height="40" rx="5" class="sim-excavator"/>
-                                <circle cx="45" cy="180" r="10" fill="#333"/>
-                                <circle cx="65" cy="180" r="10" fill="#333"/>
-                                <path d="M 60 150 L 100 110 L 110 130" class="sim-arm"/>
-                                <line id="sim-rope" x1="110" y1="130" x2="310" y2="60" class="sim-rope"/>
-                                <rect id="sim-vessel" x="300" y="40" width="40" height="140" class="sim-vessel"/>
-                            </svg>
-                        </div>
+                    <div class="diagram-box">
+                        <img src="diagram.png" alt="Reference Diagram" onerror="this.style.display='none'; this.parentElement.innerHTML='<p style=\'color:#888; font-size:12px; padding: 40px 0;\'>[Upload diagram.png to view static schematic]</p>';">
+                    </div>
 
+                    <div id="results-area" class="results-wrapper">
                         <h2>System Outputs</h2>
                         <div class="output-row"><span class="output-label">Stabilising Moment (Ms):</span><span class="output-value" id="out_Ms"></span></div>
                         <div class="output-row"><span class="output-label">Uplift Force (FV):</span><span class="output-value" id="out_FV"></span></div>
@@ -222,8 +218,44 @@
                         <div id="status-box" class="status-box">
                             Ratio: <span id="out_ratio"></span> <br> <span id="out_ratio_status"></span>
                         </div>
+                        
+                        <button class="action-btn" onclick="generatePDF()" id="pdf-btn" style="margin-top: 20px; background: transparent; border: 2px solid var(--accent); color: var(--accent);">Export Formal PDF Report</button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="simulation-container" id="sim-container">
+            <h2 style="margin-bottom: 10px;">Physical Simulation</h2>
+            <div class="simulation-box" id="sim-box">
+                <svg viewBox="0 0 800 280" class="sim-svg">
+                    <line x1="0" y1="240" x2="800" y2="240" class="sim-ground"/>
+                    
+                    <circle cx="550" cy="240" r="20" class="sim-dust"/>
+                    <circle cx="500" cy="235" r="30" class="sim-dust"/>
+                    <circle cx="600" cy="230" r="25" class="sim-dust"/>
+
+                    <g id="excavator-group">
+                        <rect x="70" y="210" width="100" height="30" class="sim-exc-track"/>
+                        <circle cx="85" cy="225" r="10" fill="#444"/>
+                        <circle cx="155" cy="225" r="10" fill="#444"/>
+                        <path d="M 90 210 L 90 150 L 160 150 L 160 210 Z" class="sim-exc-body"/>
+                        <polygon points="120,150 160,150 150,110 120,110" class="sim-exc-cab"/>
+                        <circle cx="135" cy="105" r="4" class="sim-strobe"/>
+                        <path d="M 150 180 L 250 100 L 280 140" class="sim-exc-arm"/>
+                    </g>
+                    
+                    <path id="sim-rope-solid" d="M 280 140 L 510 60" class="sim-rope" fill="none"/>
+                    <path id="sim-rope-broken" d="M 280 140 L 510 60" class="sim-rope-broken" fill="none"/>
+                    
+                    <g class="sim-vessel-group">
+                        <rect x="530" y="230" width="60" height="10" fill="#555"/>
+                        <rect x="540" y="50" width="40" height="180" class="sim-vessel-body"/>
+                        <path d="M 540 50 Q 560 30 580 50 Z" class="sim-vessel-body"/>
+                        <rect x="535" y="60" width="50" height="6" class="sim-vessel-flange"/>
+                        <circle cx="540" cy="240" r="4" fill="red"/>
+                    </g>
+                </svg>
             </div>
         </div>
     </div>
@@ -249,7 +281,7 @@
     </div>
 
     <div class="pdf-section-title">1.0 Reference Standards</div>
-    <p style="font-size: 11px; margin-bottom: 15px;">Calculations conform to requirements specified in AS 2601-2001, AS 1666.1, and AS 3569.</p>
+    <p style="font-size: 11px; margin-bottom: 15px;">Calculations conform to requirements specified in <strong>AS 2601-2001</strong>, <strong>AS 1666.1</strong>, and <strong>AS 3569</strong>.</p>
 
     <div class="pdf-section-title" style="margin-top: 0;">2.0 Input Parameters</div>
     <table class="pdf-table">
@@ -302,7 +334,12 @@
         
         const statusBox = document.getElementById('status-box'); const statusSpan = document.getElementById('out_ratio_status');
         const simBox = document.getElementById('sim-box');
+        const simContainer = document.getElementById('sim-container');
         
+        // Show results and simulation container
+        document.getElementById('results-area').style.display = 'block'; 
+        simContainer.style.display = 'block';
+
         // Reset Animation state by forcing a reflow
         simBox.classList.remove('anim-pass', 'anim-fail');
         void simBox.offsetWidth; 
@@ -316,7 +353,9 @@
             statusBox.style.color = "var(--fail)"; statusBox.style.borderColor = "var(--fail)"; statusBox.style.backgroundColor = "rgba(255,42,85,0.1)";
             simBox.classList.add('anim-fail'); // Trigger Snap/Shake Animation
         }
-        document.getElementById('results-area').style.display = 'block'; document.getElementById('pdf-btn').style.display = 'block';
+        
+        // Smooth scroll to simulation so user sees the animation
+        simContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
 
     // --- PDF GENERATOR ---
@@ -349,7 +388,7 @@
         const app = document.getElementById('app-container'); const printTemplate = document.getElementById('print-template');
         app.style.display = 'none'; printTemplate.style.display = 'block';
 
-        html2pdf().set({ margin: 15, filename: `PullForce_${document.getElementById('vessel_name').value}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(printTemplate).save().then(() => {
+        html2pdf().set({ margin: 15, filename: `PullForce_Calc_${document.getElementById('vessel_name').value}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(printTemplate).save().then(() => {
             printTemplate.style.display = 'none'; app.style.display = 'flex'; 
         });
     }
@@ -362,7 +401,7 @@
 
     const machineHeaders = ["Plant No.", "Make", "Model", "Pull Capacity (t)"];
     const machineData = [ ["LI-523", "Kobelco", "SK1300D LC", "82.29"], ["LI-750", "Volvo", "EC750E HR", "48.11"], ["LI-571", "Volvo", "EC480D L", "33.64"], ["LI-556", "Volvo", "EC380D L", "28.13"] ];
-    const wireHeaders = ["Standard", "Note"]; const wireData = [["AS1666", "Wire Rope Slings"]];
+    const wireHeaders = ["Standard", "Note"]; const wireData = [["AS 1666.1", "Wire Rope Slings - Product Specification"], ["AS 3569", "Steel Wire Ropes"]];
 
     window.onload = () => { buildTable('table-machines', machineHeaders, machineData); buildTable('table-wirerope', wireHeaders, wireData); checkSafety(); updateMachineCapacity(); };
 </script>
