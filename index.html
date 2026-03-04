@@ -6,7 +6,6 @@
     <title>Altona Demolition Toolkit</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* --- Premium Theme Variables --- */
         :root {
             --bg-color: #050505; --panel-bg: rgba(20, 20, 20, 0.75); --panel-border: rgba(255, 255, 255, 0.1);
             --accent: #00f0ff; --accent-glow: rgba(0, 240, 255, 0.4); --text-main: #f0f0f0; --text-muted: #888888;
@@ -18,7 +17,6 @@
             --accent: #0056b3; --accent-glow: rgba(0, 86, 179, 0.2); --text-main: #111111; --text-muted: #555555;
             --pass: #008a55; --pass-glow: rgba(0, 138, 85, 0.3); --warning: #d39e00; --fail: #d32f2f; --fail-glow: rgba(211, 47, 47, 0.3);
         }
-        
         * { box-sizing: border-box; }
         body { font-family: 'Inter', 'Segoe UI', sans-serif; background: radial-gradient(circle at top left, var(--panel-bg), var(--bg-color) 80%); color: var(--text-main); margin: 0; padding: 20px 10px; min-height: 100vh; display: flex; justify-content: center; transition: background 0.3s ease, color 0.3s ease; overflow-x: hidden; }
         .container { max-width: 1200px; width: 100%; position: relative; }
@@ -28,7 +26,6 @@
         h1 span { color: var(--accent); font-weight: bold; text-shadow: 0 0 10px var(--accent-glow); }
         h2 { font-size: 20px; color: var(--text-main); border-left: 3px solid var(--accent); padding-left: 12px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;}
         
-        /* Bento Grid */
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .bento-card { background: var(--panel-bg); backdrop-filter: var(--glass-blur); border: 1px solid var(--panel-border); border-radius: 16px; padding: 30px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
         .bento-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: var(--accent); }
@@ -43,20 +40,20 @@
         .back-btn:hover { color: var(--text-main); border-color: var(--text-main); }
         
         .layout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; }
-        
-        /* Inputs */
         .input-group { margin-bottom: 15px; position: relative; }
         label { display: block; font-size: 14px; margin-bottom: 8px; color: var(--text-muted); font-weight: 600; }
         input, select { background: rgba(0, 0, 0, 0.3); color: var(--accent); padding: 12px 15px; width: 100%; border: 1px solid var(--panel-border); border-radius: 8px; font-family: monospace; font-size: 16px; transition: all 0.3s; }
         input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-        .warning-state input { border-color: var(--warning); color: var(--warning);}
-        .warning-msg { color: var(--warning); font-size: 12px; margin-top: 5px; display: none; font-weight: bold; }
-        .warning-state .warning-msg { display: block; animation: shake 0.4s; }
         
+        .warning-state input { border-color: var(--warning); color: var(--warning);}
+        .warning-msg { color: var(--warning); font-size: 12px; margin-top: 5px; display: none; font-weight: bold; animation: shake 0.4s; }
+        .warning-state .warning-msg { display: block; }
+        
+        .critical-warning { background: rgba(255, 204, 0, 0.1); border: 2px solid var(--warning); color: var(--warning); padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; font-weight: bold; text-align: center; font-size: 14px; animation: shake 0.4s; }
+
         button.action-btn { background: var(--accent); color: #000; border: none; padding: 18px 20px; font-size: 16px; font-weight: bold; text-transform: uppercase; border-radius: 8px; cursor: pointer; width: 100%; transition: all 0.3s; margin-bottom: 15px; letter-spacing: 1px;}
         button.action-btn:hover { background: #00c3cc; transform: translateY(-3px); box-shadow: 0 10px 20px var(--accent-glow); }
         
-        /* Results */
         .results-wrapper { display: none; margin-top: 20px; border-top: 1px solid var(--panel-border); padding-top: 20px; animation: fadeIn 0.5s ease; }
         .output-row { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding: 12px 0; }
         .output-row:last-child { border-bottom: none; }
@@ -68,35 +65,29 @@
         .diagram-box { background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; border: 1px solid var(--panel-border); text-align: center; margin-bottom: 20px; }
         .diagram-box img { max-width: 100%; border-radius: 4px; }
 
-        /* --- ADVANCED SIMULATION CSS --- */
+        /* Simulation CSS */
         .simulation-container { display: none; margin-top: 40px; animation: fadeIn 0.5s ease; }
         .simulation-box { width: 100%; height: 280px; background: linear-gradient(to bottom, rgba(10,10,20,0.8), rgba(0,0,0,0.9)); border-radius: 12px; border: 1px solid var(--panel-border); position: relative; overflow: hidden; }
         .sim-svg { width: 100%; height: 100%; }
-        
         .sim-ground { stroke: #333; stroke-width: 4; }
         .sim-exc-body { fill: #f0b000; }
         .sim-exc-track { fill: #222; stroke: #111; stroke-width: 2; rx: 8; }
         .sim-exc-cab { fill: #111; opacity: 0.8; }
         .sim-exc-arm { stroke: #d09000; stroke-width: 12; stroke-linecap: round; fill: none; stroke-linejoin: round; transition: all 1s ease; }
-        
         .sim-vessel-group { transform-origin: 550px 240px; transition: transform 2s cubic-bezier(0.4, 0, 0.2, 1); }
         .sim-vessel-body { fill: var(--text-main); stroke: #555; stroke-width: 2; }
         .sim-vessel-flange { fill: #444; }
-        
         .sim-rope { stroke: var(--text-muted); stroke-width: 2; transition: all 0.5s; }
         .sim-rope-broken { stroke: var(--fail); stroke-width: 3; stroke-dasharray: 10 5; opacity: 0; }
-        
         .sim-strobe { fill: red; opacity: 0; }
         .sim-dust { fill: rgba(200, 200, 200, 0.4); opacity: 0; }
-
-        /* PASS ANIMATION */
+        
         .anim-pass { border-color: var(--pass); box-shadow: 0 0 40px var(--pass-glow) inset; }
         .anim-pass .sim-rope { stroke: var(--pass); }
         .anim-pass .sim-vessel-group { transform: rotate(-83deg); }
         .anim-pass .sim-exc-arm { d: path("M 150 180 L 220 120 L 270 160"); }
         .anim-pass .sim-dust { animation: dust-cloud 2s ease-out forwards; animation-delay: 1.5s; }
-
-        /* FAIL ANIMATION */
+        
         .anim-fail { border-color: var(--fail); box-shadow: 0 0 40px var(--fail-glow) inset; animation: shake-screen 0.5s; }
         .anim-fail .sim-vessel-group { animation: rock-vessel 1s ease-in-out forwards; }
         .anim-fail .sim-rope { opacity: 0; }
@@ -110,18 +101,10 @@
         @keyframes excavator-recoil { 0% { transform: translateX(0); } 20% { transform: translateX(-15px) rotate(-2deg); } 100% { transform: translateX(0) rotate(0deg); } }
         @keyframes strobe-flash { 0% { opacity: 0; } 100% { opacity: 1; filter: drop-shadow(0 0 10px red); } }
         @keyframes shake-screen { 0%, 100% { transform: translate(0,0); } 20% { transform: translate(-5px, 5px); } 40% { transform: translate(5px, -5px); } 60% { transform: translate(-5px, -5px); } 80% { transform: translate(5px, 5px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Tables & PDF */
-        .table-container { overflow-x: auto; margin-top: 20px; border-radius: 8px; border: 1px solid var(--panel-border); }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid var(--panel-border); }
-        th { background: rgba(0,0,0,0.3); color: var(--accent); font-weight: bold; text-transform: uppercase; font-size: 14px; }
-        td { color: var(--text-main); font-size: 14px; font-family: monospace; }
-        tr:hover { background: rgba(255,255,255,0.05); }
-        .pdf-only { display: none; }
-        
-        /* PDF PRINT STYLING - CALC PAD STYLE */
+        /* PDF Styles */
         #print-template { display: none; background: white; color: black; font-family: 'Helvetica', 'Arial', sans-serif; padding: 20px; width: 800px; font-size: 12px; position: relative; }
         #print-template::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px); background-size: 20px 20px; z-index: -1; opacity: 0.5; }
         .pdf-title-block { border: 2px solid #000; margin-bottom: 20px; display: grid; grid-template-columns: 2fr 1fr; background: white; }
@@ -141,6 +124,7 @@
         .signoff-line { border-top: 1px solid #000; padding-top: 2px; font-size: 10px; }
         .status-pass { color: green; font-weight: bold; }
         .status-fail { color: red; font-weight: bold; }
+        .status-warning { color: orange; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -153,7 +137,7 @@
         <div class="bento-grid">
             <div class="bento-card card-large" onclick="openPage('page-calculator')">
                 <div class="card-title">Pull Force Calculator</div>
-                <div class="card-desc">Main demolition pull analysis with dynamic visual failure simulation.</div>
+                <div class="card-desc">Advanced demolition pull analysis with dynamic wind loading, base shear checks, and failure simulation.</div>
             </div>
             <div class="bento-card" onclick="openPage('page-machines')">
                 <div class="card-title">Machines Database</div>
@@ -180,6 +164,11 @@
                     <div class="input-group"><label>Base Flange OD (D) [m]:</label><input type="number" id="base_D" value="5.7" class="auto-save"></div>
                     <div class="input-group"><label>Vessel Max Weight (W) [t]:</label><input type="number" id="weight_W" value="99" class="auto-save"></div>
                     
+                    <h2 style="margin-top: 30px;">Environmental & Constraints</h2>
+                    <div class="input-group"><label>Design Wind Speed (V) [m/s]:</label><input type="number" id="wind_v" value="0" class="auto-save"></div>
+                    <div class="input-group"><label>Vessel Drag Coefficient (Cd):</label><input type="number" id="wind_cd" value="0.8" step="0.1" class="auto-save"></div>
+                    <div class="input-group"><label>Base Friction Coefficient (μ):</label><input type="number" id="base_mu" value="0.3" step="0.1" class="auto-save"></div>
+
                     <h2 style="margin-top: 30px;">Rigging</h2>
                     <div class="input-group"><label>Excavator Pull Ht (P) [m]:</label><input type="number" id="pull_P" value="0.6" class="auto-save"></div>
                     <div class="input-group" id="standoff-group">
@@ -208,15 +197,17 @@
                     </div>
 
                     <div id="results-area" class="results-wrapper">
+                        <div id="critical-warning-box" class="critical-warning"></div>
+
                         <h2>System Outputs</h2>
                         <div class="output-row"><span class="output-label">Stabilising Moment (Ms):</span><span class="output-value" id="out_Ms"></span></div>
+                        <div class="output-row"><span class="output-label">Wind Moment (Mw):</span><span class="output-value" id="out_Mw"></span></div>
                         <div class="output-row"><span class="output-label">Uplift Force (FV):</span><span class="output-value" id="out_FV"></span></div>
                         <div class="output-row"><span class="output-label">Net Tension (FR):</span><span class="output-value" id="out_FR"></span></div>
                         <div class="output-row"><span class="output-label">De-Rating Factor (kexc):</span><span class="output-value" id="out_kexc"></span></div>
                         <div class="output-row"><span class="output-label">Recommended Pull (RPF):</span><span class="output-value highlight" id="out_RPF"></span></div>
                         <div class="output-row"><span class="output-label">Max Rope Force (FR,max):</span><span class="output-value" id="out_FRmax"></span></div>
                         <div class="output-row"><span class="output-label">Rope MBF Reqd:</span><span class="output-value" id="out_MBF"></span></div>
-                        <div class="output-row"><span class="output-label">Rope MBF Reqd (kN):</span><span class="output-value" id="out_MBF_kN"></span></div>
                         
                         <div id="status-box" class="status-box">
                             Capacity Ratio: <span id="out_ratio"></span> <br> <span id="out_ratio_status"></span>
@@ -263,8 +254,6 @@
         </div>
     </div>
 
-    <div id="page-machines" class="page"><button class="back-btn" onclick="openPage('view-dashboard')">← Back</button><div class="panel"><h2>Machines Database</h2><div class="table-container" id="table-machines"></div></div></div>
-    <div id="page-wirerope" class="page"><button class="back-btn" onclick="openPage('view-dashboard')">← Back</button><div class="panel"><h2>Wire Rope Specifications</h2><div class="table-container" id="table-wirerope"></div></div></div>
 </div>
 
 <div id="print-template">
@@ -286,24 +275,27 @@
     <div class="pdf-section-title">1.0 Reference Standards</div>
     <p style="font-size: 11px; margin-bottom: 15px;">Calculations conform to requirements specified in <strong>AS 2601-2001</strong>, <strong>AS 1666.1</strong>, and <strong>AS 3569</strong>.</p>
 
-    <div class="pdf-section-title" style="margin-top: 0;">2.0 Input Parameters</div>
+    <div class="pdf-section-title" style="margin-top: 0;">2.0 Input Parameters & Environment</div>
     <table class="pdf-table">
         <tr><th>Vessel Height (H)</th><td id="pr_vessel_H"></td><th>Machine Selected</th><td id="pr_machine_name"></td></tr>
         <tr><th>Rotation Point (h)</th><td id="pr_rot_h"></td><th>Machine Pull Cap (Fcap)</th><td id="pr_f_cap"></td></tr>
         <tr><th>Attachment Height (A)</th><td id="pr_att_A"></td><th>Machine Standoff (S)</th><td id="pr_standoff_S"></td></tr>
-        <tr><th>Base Flange OD (D)</th><td id="pr_base_D"></td><th>Excavator Pull Ht (P)</th><td id="pr_pull_P"></td></tr>
-        <tr><th>Vessel Max Weight (W)</th><td id="pr_weight_W" colspan="3"></td></tr>
+        <tr><th>Base Flange OD (D)</th><td id="pr_base_D"></td><th>Design Wind Spd (V)</th><td id="pr_wind_v"></td></tr>
+        <tr><th>Vessel Max Weight (W)</th><td id="pr_weight_W"></td><th>Base Friction (μ)</th><td id="pr_base_mu"></td></tr>
     </table>
 
     <div class="pdf-section-title">3.0 Calculation Results</div>
     <table class="pdf-table">
         <tr><th>Stabilising Moment (Ms) [W × D / 2]</th><td id="pr_out_Ms"></td></tr>
+        <tr><th>Wind Overturning Moment (Mw)</th><td id="pr_out_Mw"></td></tr>
+        <tr><th>Net Horizontal Force Req (FH) [(Ms+Mw)/A]</th><td id="pr_out_FH"></td></tr>
         <tr><th>Uplift Force (FV) [FH × Tan(θ)]</th><td id="pr_out_FV"></td></tr>
         <tr><th>Net Tension in Rope (FR) [√(FH² + FV²)]</th><td id="pr_out_FR"></td></tr>
         <tr><th>Machine Pull Force De-Rating (kexc) [FH / FR]</th><td id="pr_out_kexc"></td></tr>
         <tr><th>Recommended Pull Force (RPF) [FH × 1.5 × (1 / kexc)]</th><td id="pr_out_RPF" style="font-weight: bold;"></td></tr>
         <tr><th>Maximum Rope Force From Machine (FR,max) [Fcap / kexc]</th><td id="pr_out_FRmax"></td></tr>
         <tr><th>Minimum Breaking Force Reqd (MBF) [1.25 × 1.428 × FR,max]</th><td id="pr_out_MBF"></td></tr>
+        <tr><th>Base Shear Sliding Check</th><td id="pr_out_sliding" style="font-weight: bold;"></td></tr>
         <tr><th>Capacity Ratio (Fcap / RPF)</th><td id="pr_out_ratio"></td></tr>
         <tr><th>System Status</th><td id="pr_out_ratio_status" style="font-size: 14px;"></td></tr>
     </table>
@@ -339,10 +331,27 @@
         const P = parseFloat(document.getElementById('pull_P').value); 
         const S = parseFloat(document.getElementById('standoff_S').value); 
         const Fcap = parseFloat(document.getElementById('f_cap').value);
+        const V_wind = parseFloat(document.getElementById('wind_v').value) || 0;
+        const Cd = parseFloat(document.getElementById('wind_cd').value) || 0.8;
+        const mu = parseFloat(document.getElementById('base_mu').value) || 0.3;
         
-        // Exact Spreadsheet Math
+        // 1. Base Moment
         const Ms = W * D / 2; 
-        const FH = Ms / A; 
+
+        // 2. Wind Loading Upgrades
+        const Pw = 0.5 * 1.2 * Math.pow(V_wind, 2) * Cd; // Wind pressure N/m2
+        const A_exp = document.getElementById('vessel_H').value * D; // Exposed area
+        const Fw_tonne = (Pw * A_exp) / 9810; // Wind force in tonnes
+        const Mw = Fw_tonne * (document.getElementById('vessel_H').value / 2); // Wind moment
+        
+        // Assume worst-case: wind opposes the pull
+        const FH = (Ms + Mw) / A; 
+        
+        // 3. Base Shear Check
+        const V_res = W * mu; 
+        const slidingRisk = FH > V_res;
+
+        // 4. Standard Math Engine
         const deltaH = A + h - P; 
         const theta_rad = Math.atan(deltaH / S); 
         const FV = FH * Math.tan(theta_rad); 
@@ -358,17 +367,22 @@
         const MBF_tonne = T * FOS * FR_max;
         const MBF_kN = MBF_tonne * 9.81;
         
+        // Update UI Outputs
         document.getElementById('out_Ms').innerText = Ms.toFixed(2) + " t.m"; 
+        document.getElementById('out_Mw').innerText = Mw.toFixed(2) + " t.m"; 
         document.getElementById('out_FV').innerText = FV.toFixed(2) + " t"; 
         document.getElementById('out_FR').innerText = FR.toFixed(2) + " t"; 
         document.getElementById('out_kexc').innerText = kexc.toFixed(4);
         document.getElementById('out_RPF').innerText = RPF.toFixed(2) + " t"; 
         document.getElementById('out_FRmax').innerText = FR_max.toFixed(2) + " t"; 
-        document.getElementById('out_MBF').innerText = MBF_tonne.toFixed(2) + " t"; 
-        document.getElementById('out_MBF_kN').innerText = MBF_kN.toFixed(2) + " kN"; 
+        document.getElementById('out_MBF').innerText = MBF_tonne.toFixed(2) + " t (" + MBF_kN.toFixed(1) +" kN)"; 
         document.getElementById('out_ratio').innerText = ratio.toFixed(2);
         
+        // Save FH for PDF
+        document.getElementById('pr_out_FH').innerText = FH.toFixed(2) + " t";
+
         const statusBox = document.getElementById('status-box'); const statusSpan = document.getElementById('out_ratio_status');
+        const warningBox = document.getElementById('critical-warning-box');
         const simBox = document.getElementById('sim-box');
         const simContainer = document.getElementById('sim-container');
         
@@ -376,16 +390,33 @@
         simContainer.style.display = 'block';
 
         simBox.classList.remove('anim-pass', 'anim-fail');
-        void simBox.offsetWidth; 
+        void simBox.offsetWidth; // Reflow
 
-        if (ratio >= 1.0) { 
+        // Check sliding failure first
+        if (slidingRisk) {
+            warningBox.style.display = 'block';
+            warningBox.innerText = `⚠ CRITICAL: Sliding Base Shear Failure! Required FH (${FH.toFixed(1)}t) exceeds base friction resistance (${V_res.toFixed(1)}t). Physical shear stops required.`;
+            document.getElementById('pr_out_sliding').innerText = "FAIL - REQUIRES SHEAR STOPS";
+            document.getElementById('pr_out_sliding').style.color = "red";
+        } else {
+            warningBox.style.display = 'none';
+            document.getElementById('pr_out_sliding').innerText = "PASS - FRICTION ADEQUATE";
+            document.getElementById('pr_out_sliding').style.color = "green";
+        }
+
+        if (ratio >= 1.0 && !slidingRisk) { 
             statusSpan.innerText = "PASS - PROCEED"; 
             statusBox.style.color = "var(--pass)"; statusBox.style.borderColor = "var(--pass)"; statusBox.style.backgroundColor = "rgba(0,255,157,0.1)";
             simBox.classList.add('anim-pass'); 
-        } else { 
+        } else if (ratio < 1.0) { 
             statusSpan.innerText = "FAIL - CAPACITY EXCEEDED"; 
             statusBox.style.color = "var(--fail)"; statusBox.style.borderColor = "var(--fail)"; statusBox.style.backgroundColor = "rgba(255,42,85,0.1)";
             simBox.classList.add('anim-fail'); 
+        } else {
+            // Fails due to sliding risk, not capacity
+            statusSpan.innerText = "FAIL - SLIDING RISK"; 
+            statusBox.style.color = "var(--warning)"; statusBox.style.borderColor = "var(--warning)"; statusBox.style.backgroundColor = "rgba(255,204,0,0.1)";
+            simBox.classList.add('anim-fail');
         }
         
         simContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -403,22 +434,29 @@
         document.getElementById('pr_pull_P').innerText = document.getElementById('pull_P').value + " m";
         document.getElementById('pr_standoff_S').innerText = document.getElementById('standoff_S').value + " m";
         
+        document.getElementById('pr_wind_v').innerText = document.getElementById('wind_v').value + " m/s";
+        document.getElementById('pr_base_mu').innerText = document.getElementById('base_mu').value;
+
         const select = document.getElementById('machine_select');
         document.getElementById('pr_machine_name').innerText = select.options[select.selectedIndex].text;
         document.getElementById('pr_f_cap').innerText = document.getElementById('f_cap').value + " t";
         
         document.getElementById('pr_out_Ms').innerText = document.getElementById('out_Ms').innerText;
+        document.getElementById('pr_out_Mw').innerText = document.getElementById('out_Mw').innerText;
         document.getElementById('pr_out_FV').innerText = document.getElementById('out_FV').innerText;
         document.getElementById('pr_out_FR').innerText = document.getElementById('out_FR').innerText;
         document.getElementById('pr_out_kexc').innerText = document.getElementById('out_kexc').innerText;
         document.getElementById('pr_out_RPF').innerText = document.getElementById('out_RPF').innerText;
         document.getElementById('pr_out_FRmax').innerText = document.getElementById('out_FRmax').innerText;
-        document.getElementById('pr_out_MBF').innerText = document.getElementById('out_MBF').innerText + " / " + document.getElementById('out_MBF_kN').innerText;
+        document.getElementById('pr_out_MBF').innerText = document.getElementById('out_MBF').innerText;
         document.getElementById('pr_out_ratio').innerText = document.getElementById('out_ratio').innerText;
         
         const ratioStatus = document.getElementById('out_ratio_status').innerText;
         const statusEl = document.getElementById('pr_out_ratio_status');
-        statusEl.innerText = ratioStatus; statusEl.className = ratioStatus.includes("PASS") ? "status-pass" : "status-fail";
+        statusEl.innerText = ratioStatus; 
+        if(ratioStatus.includes("PASS")) statusEl.className = "status-pass";
+        else if(ratioStatus.includes("SLIDING")) statusEl.className = "status-warning";
+        else statusEl.className = "status-fail";
 
         const app = document.getElementById('app-container'); const printTemplate = document.getElementById('print-template');
         app.style.display = 'none'; printTemplate.style.display = 'block';
@@ -428,17 +466,6 @@
         });
     }
 
-    function buildTable(containerId, headers, dataRows) {
-        let html = '<table><thead><tr>'; headers.forEach(h => html += `<th>${h}</th>`); html += '</tr></thead><tbody>';
-        dataRows.forEach(row => { html += '<tr>'; row.forEach(cell => html += `<td>${cell}</td>`); html += '</tr>'; });
-        html += '</tbody></table>'; document.getElementById(containerId).innerHTML = html;
-    }
-
-    const machineHeaders = ["Plant No.", "Make", "Model", "Pull Capacity (t)"];
-    const machineData = [ ["LI-523", "Kobelco", "SK1300D LC", "82.29"], ["LI-750", "Volvo", "EC750E HR", "48.11"], ["LI-571", "Volvo", "EC480D L", "33.64"], ["LI-556", "Volvo", "EC380D L", "28.1345"] ];
-    const wireHeaders = ["Standard", "Note"]; const wireData = [["AS 1666.1", "Wire Rope Slings - Product Specification"], ["AS 3569", "Steel Wire Ropes"]];
-
-    window.onload = () => { buildTable('table-machines', machineHeaders, machineData); buildTable('table-wirerope', wireHeaders, wireData); checkSafety(); updateMachineCapacity(); };
 </script>
 </body>
 </html>
