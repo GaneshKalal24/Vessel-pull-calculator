@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Altona Demolition Toolkit v5 - Enterprise Edition</title>
+<title>Altona Demolition Toolkit v6 - Real Physics Engine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500;600&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
@@ -13,135 +13,132 @@
   --bg:#f4f2ee; --surf:#ffffff; --surf2:#faf8f5; --surf3:#f0ece4;
   --border:#e2dfd8; --border2:#d0cbbd;
   --accent:#df4700; --acc2:#ff6600; --acc-dim:rgba(223,71,0,.08); --acc-mid:rgba(223,71,0,.25);
-  --text:#110e0c; --text2:#4a4238; --muted:#8a8278;
+  --text:#110e0c; --text2:#332d26; --muted:#766f65;
   --pass:#0e6b38; --pass-bg:rgba(14,107,56,.08); --pass-bd:rgba(14,107,56,.3);
   --fail:#a61520; --fail-bg:rgba(166,21,32,.08); --fail-bd:rgba(166,21,32,.3);
   --warn:#985700; --warn-bg:rgba(152,87,0,.08); --warn-bd:rgba(152,87,0,.3);
   --info:#13579e; --info-bg:rgba(19,87,158,.08); --info-bd:rgba(19,87,158,.3);
   --sh:0 4px 12px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.04);
   --shl:0 8px 24px rgba(0,0,0,.06),0 24px 64px rgba(0,0,0,.08);
-  --r:12px;
+  --r:14px;
+}
+body.light-mode {
+  --bg:#0a0a0c; --surf:#141418; --surf2:#1a1a20; --surf3:#222228;
+  --border:#2a2a32; --border2:#3a3a44;
+  --accent:#ff5500; --acc2:#ff7733; --acc-dim:rgba(255,85,0,.15); --acc-mid:rgba(255,85,0,.3);
+  --text:#f4f4f5; --text2:#d0d0d5; --muted:#8a8a95;
+  --pass:#20b060; --pass-bg:rgba(32,176,96,.15); --pass-bd:rgba(32,176,96,.4);
+  --fail:#ff4455; --fail-bg:rgba(255,68,85,.15); --fail-bd:rgba(255,68,85,.4);
+  --warn:#ffaa00; --warn-bg:rgba(255,170,0,.15); --warn-bd:rgba(255,170,0,.4);
+  --info:#44aaff; --info-bg:rgba(68,170,255,.15); --info-bd:rgba(68,170,255,.4);
+  --sh:0 4px 12px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.4);
+  --shl:0 8px 24px rgba(0,0,0,.6),0 24px 64px rgba(0,0,0,.8);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;cursor:none;overflow-x:hidden}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;cursor:none;overflow-x:hidden;transition:background 0.3s, color 0.3s;}
 
 /* MAGNETIC CURSOR */
-#cr{position:fixed;width:8px;height:8px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s, opacity .2s;}
-#crr{position:fixed;width:32px;height:32px;border:1.5px solid var(--acc-mid);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .15s ease-out;}
+#cr{position:fixed;width:10px;height:10px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s, opacity .2s;}
+#crr{position:fixed;width:36px;height:36px;border:2px solid var(--acc-mid);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .15s ease-out;}
 .mag-active #cr{opacity:0;}
 .mag-active #crr{border-color:var(--accent);background:var(--acc-dim);backdrop-filter:blur(2px);}
 
 /* LAYOUT */
-.app{max-width:1440px;margin:0 auto;padding:0 32px 100px}
+.app{max-width:1500px;margin:0 auto;padding:0 40px 100px}
 
-/* HEADER */
-.hdr{padding:40px 0;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--border);margin-bottom:40px}
-.tag{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;font-weight:600}
-h1.logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(54px,8vw,96px);letter-spacing:2px;line-height:0.85}
+/* HEADER & THEME TOGGLE */
+.hdr{padding:40px 0;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--border);margin-bottom:40px}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;font-weight:700}
+h1.logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,8vw,110px);letter-spacing:2px;line-height:0.85}
 h1.logo em{color:var(--accent);font-style:normal}
-.logo-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;margin-top:14px}
-.sys-ok{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--pass);letter-spacing:3px;font-weight:600}
-.sdot{width:8px;height:8px;background:var(--pass);border-radius:50%;animation:pulse 2s infinite}
+.logo-sub{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--muted);letter-spacing:2px;margin-top:14px;font-weight:500;}
+
+.hdr-r{display:flex;flex-direction:column;align-items:flex-end;gap:16px;}
+.sys-ok{display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--pass);letter-spacing:3px;font-weight:700}
+.sdot{width:10px;height:10px;background:var(--pass);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(14,107,56,.4)}50%{box-shadow:0 0 0 6px rgba(14,107,56,0)}}
+
+/* Sleek Toggle Switch */
+.theme-switch-wrapper { display:flex; align-items:center; gap:10px; cursor:none;}
+.theme-label { font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text2); font-weight:600; text-transform:uppercase;}
+.theme-switch { position:relative; width:60px; height:30px; background:var(--border2); border-radius:15px; transition:background 0.3s; }
+.theme-slider { position:absolute; top:3px; left:3px; width:24px; height:24px; background:var(--surf); border-radius:50%; transition:transform 0.3s; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+body.light-mode .theme-switch { background:var(--accent); }
+body.light-mode .theme-slider { transform:translateX(30px); background:#fff;}
 
 /* PAGES */
 .page{display:none}
 .page.active{display:block;animation:fin .4s cubic-bezier(0.16, 1, 0.3, 1) both}
 @keyframes fin{from{opacity:0;transform:translateY(15px) scale(0.99)}to{opacity:1;transform:none scale(1)}}
-.back-btn{display:inline-flex;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:12px 20px;border-radius:8px;transition:all .2s;margin-bottom:32px;box-shadow:var(--sh)}
-.back-btn::before{content:'←';font-size:14px;}
+.back-btn{display:inline-flex;align-items:center;gap:10px;background:var(--surf);border:2px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:14px 24px;border-radius:10px;transition:all .2s;margin-bottom:32px;box-shadow:var(--sh);font-weight:600;cursor:none;}
+.back-btn::before{content:'←';font-size:18px;}
 .back-btn:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shl)}
 
-/* BENTO DASHBOARD */
-.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-.bc{background:var(--surf);padding:40px;border-radius:var(--r);border:1px solid var(--border);position:relative;overflow:hidden;transition:all .3s cubic-bezier(0.25, 0.8, 0.25, 1);box-shadow:var(--sh);display:flex;flex-direction:column;justify-content:center;}
-.bc::before{content:'';position:absolute;top:0;left:0;width:4px;height:0%;background:var(--accent);transition:height .3s;}
-.bc:hover::before{height:100%;}
-.bc:hover{transform:translateY(-6px);box-shadow:var(--shl);border-color:var(--border2);}
-.bc.s2{grid-column:span 2}.bc.r2{grid-row:span 2}
-.ctag{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;font-weight:600;}
-.ctitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,4vw,48px);letter-spacing:2px;line-height:1;margin-bottom:12px;}
-.cdesc{font-size:14.5px;font-weight:400;color:var(--muted);line-height:1.6;}
-.carr{position:absolute;top:32px;right:32px;width:40px;height:40px;border:1.5px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted);transition:all .3s;}
-.bc:hover .carr{border-color:var(--accent);color:var(--accent);background:var(--acc-dim);transform:rotate(45deg);}
-
 /* CALC LAYOUT */
-.calc-layout{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
-.inputs-col{display:flex;flex-direction:column;gap:16px}
+.calc-layout{display:grid;grid-template-columns:420px 1fr;gap:32px;align-items:start}
+.inputs-col{display:flex;flex-direction:column;gap:20px}
 
 /* PANEL */
-.panel{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
-.ph{display:flex;align-items:center;gap:10px;padding:20px 24px;background:var(--surf2);border-bottom:1px solid var(--border);}
-.ph-icon{width:4px;height:16px;background:var(--accent);border-radius:2px;}
-.ph-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--text);flex:1}
-.pb{padding:24px}
+.panel{background:var(--surf);border:2px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.ph{display:flex;align-items:center;gap:12px;padding:24px 28px;background:var(--surf2);border-bottom:2px solid var(--border);}
+.ph-icon{width:6px;height:22px;background:var(--accent);border-radius:3px;}
+.ph-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--text);flex:1}
+.pb{padding:28px}
 
 /* FORM */
-.ig{margin-bottom:16px}
-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-weight:600;}
+.ig{margin-bottom:20px}
+label{display:block;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;font-weight:700;}
 .iw{position:relative}
-input[type=number],input[type=text],select{width:100%;background:var(--surf);border:1.5px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;padding:12px 14px;outline:none;transition:all .2s;border-radius:8px;-webkit-appearance:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.02);}
+input[type=number],input[type=text],select{width:100%;background:var(--surf);border:2px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;padding:14px 16px;outline:none;transition:all .2s;border-radius:8px;-webkit-appearance:none;cursor:none;}
 input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--acc-dim);}
-.unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);pointer-events:none}
-.ig2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.unit{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--muted);pointer-events:none;font-weight:bold;}
+.ig2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
 /* BUTTONS */
-.run-btn{width:100%;background:var(--accent);color:#fff;border:none;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;padding:18px;border-radius:8px;transition:all .2s;margin-top:8px;box-shadow:0 4px 12px var(--acc-mid);}
+.run-btn{width:100%;background:var(--accent);color:#fff;border:none;font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:4px;padding:20px;border-radius:10px;transition:all .2s;margin-top:8px;box-shadow:0 4px 12px var(--acc-mid);cursor:none;}
 .run-btn:hover{background:var(--acc2);transform:translateY(-2px);box-shadow:0 8px 20px var(--acc-mid);}
-.sec-btns{display:flex;gap:10px;margin-top:10px}
-.sec-btn{flex:1;background:var(--surf);color:var(--accent);border:1.5px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;padding:12px;border-radius:8px;transition:all .2s;text-transform:uppercase;font-weight:600;text-align:center;}
+.sec-btns{display:flex;gap:12px;margin-top:10px}
+.sec-btn{flex:1;background:var(--surf);color:var(--accent);border:2px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:1.5px;padding:14px;border-radius:8px;transition:all .2s;text-transform:uppercase;font-weight:700;text-align:center;cursor:none;}
 .sec-btn:hover{border-color:var(--accent);background:var(--acc-dim);}
 
 /* RESULTS GRID */
 .results-area{display:none;animation:fin .4s ease both;}
-.rg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;box-shadow:var(--sh);}
-.rc{background:var(--surf);padding:16px}
-.rl{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;font-weight:600;}
-.rv{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:var(--text)}
+.rg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border:2px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px;box-shadow:var(--sh);}
+.rc{background:var(--surf);padding:20px}
+.rl{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:700;}
+.rv{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;color:var(--text)}
 
 /* STATUS CARDS */
-.chk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-.chk{border-radius:12px;padding:20px;border:1.5px solid var(--border);background:var(--surf);position:relative;overflow:hidden;}
-.chk::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;}
+.chk-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.chk{border-radius:14px;padding:24px;border:2px solid var(--border);background:var(--surf);position:relative;overflow:hidden;}
+.chk::before{content:'';position:absolute;left:0;top:0;height:100%;width:6px;}
 .chk.pass::before{background:var(--pass)}.chk.fail::before{background:var(--fail)}.chk.warn::before{background:var(--warn)}
-.chk-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--text2);font-weight:600;}
-.chk-val{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px}
+.chk-label{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;color:var(--text2);font-weight:700;}
+.chk-val{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px}
 .chk.pass .chk-val{color:var(--pass)}.chk.fail .chk-val{color:var(--fail)}.chk.warn .chk-val{color:var(--warn)}
-.chk-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px}
+.chk-sub{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);margin-top:6px;font-weight:500;}
 
-/* RIGGING PLANNER (NEW) */
-.rig-box{background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:var(--sh);}
-.rig-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:12px;}
-.rig-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--text);}
-.rig-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed var(--border);}
+/* RIGGING PLANNER */
+.rig-box{background:var(--surf);border:2px solid var(--border);border-radius:14px;padding:32px;margin-bottom:24px;box-shadow:var(--sh);}
+.rig-hdr{display:flex;align-items:center;gap:12px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:16px;}
+.rig-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--text);}
+.rig-item{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:2px dashed var(--border);}
 .rig-item:last-child{border-bottom:none;}
-.rig-lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);font-weight:600;}
-.rig-val{font-family:'Barlow',sans-serif;font-size:16px;font-weight:700;color:var(--accent);}
-.rig-spec{font-size:12px;color:var(--muted);font-weight:400;}
+.rig-lbl{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--text2);font-weight:700;}
+.rig-val{font-family:'Barlow',sans-serif;font-size:22px;font-weight:700;color:var(--accent);}
+.rig-spec{font-size:14px;color:var(--muted);font-weight:500;margin-top:4px;}
 
 /* SIMULATION */
-.sim-wrap{display:none;animation:fin .4s .1s ease both;background:var(--surf);padding:20px;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shl);}
-.sim-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.sim-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--text)}
-#sim-canvas{width:100%;height:360px;display:block;border-radius:8px;background:#111;}
-
-/* TABLES */
-.data-wrap{overflow-x:auto;padding:24px}
-table.dt{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace}
-table.dt th{background:var(--surf2);border-bottom:2px solid var(--border2);color:var(--text2);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:14px;text-align:left;}
-table.dt td{border-bottom:1px solid var(--border);padding:14px;font-size:13px;color:var(--text);}
-table.dt tr.hl td{background:var(--pass-bg);color:var(--pass);font-weight:600;border-left:3px solid var(--pass);}
-
-/* EXCLUSION ZONE */
-.exz-layout{display:grid;grid-template-columns:360px 1fr;gap:24px;}
-#exz-svg{width:100%;background:#111;border-radius:12px;display:block;}
+.sim-wrap{display:none;animation:fin .4s .1s ease both;background:var(--surf);padding:24px;border-radius:var(--r);border:2px solid var(--border);box-shadow:var(--shl);}
+.sim-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sim-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--text)}
+#sim-canvas{width:100%;height:450px;display:block;border-radius:10px;background:#050505;}
 
 /* PDF EXPORT (Hidden) */
 #print-template{display:none;background:#fff;color:#000;font-family:'Helvetica',sans-serif;width:800px;padding:40px;font-size:12px;}
 .ptb{border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;}
 .ptb h1{font-size:24px;margin:0;font-weight:bold;letter-spacing:1px;}
-.ptb p{margin:4px 0 0 0;font-size:11px;}
 .ps{background:#e0e0e0;padding:6px 10px;font-weight:bold;font-size:14px;margin:20px 0 10px;border-left:4px solid #000;}
 .pt2{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:15px;}
 .pt2 th,.pt2 td{border:1px solid #000;padding:6px 8px;text-align:left;}
@@ -158,48 +155,22 @@ table.dt tr.hl td{background:var(--pass-bg);color:var(--pass);font-weight:600;bo
 <div class="app">
 <header class="hdr">
   <div>
-    <div class="tag">// Demolition Engineering Suite · Enterprise Edition</div>
+    <div class="tag">// Temporary Works Engineering Suite</div>
     <h1 class="logo">ALTONA <em>TOOLKIT</em></h1>
-    <div class="logo-sub">AS 2601–2001 · AS 1666.1 · AS 3569 · AS 2741 · AS 4497</div>
+    <div class="logo-sub">AS 2601–2001 · AS 1666.1 · AS 3569 · AS 2741</div>
   </div>
   <div class="hdr-r">
     <div class="sys-ok"><div class="sdot"></div>SYSTEM SECURE</div>
-    <div class="ver">v5.0.0 PRO</div>
+    
+    <div class="theme-switch-wrapper hover-mag" onclick="toggleTheme()">
+      <span class="theme-label">DARK</span>
+      <div class="theme-switch"><div class="theme-slider"></div></div>
+      <span class="theme-label">LIGHT</span>
+    </div>
   </div>
 </header>
 
-<div id="pg-dash" class="page active">
-  <div class="bento">
-    <div class="bc s2 r2 hover-mag" onclick="go('pg-calc')">
-      <div class="ctag">Primary Engine</div>
-      <div class="ctitle">Advanced Overturning<br>& Rigging Analysis</div>
-      <div class="cdesc">Full physical overturning mechanics coupled with automated multi-leg rigging component selection and real-time vector force simulation HUD.</div>
-      <div class="carr">↗</div>
-    </div>
-    <div class="bc hover-mag" onclick="go('pg-exclusion')">
-      <div class="ctag">Safety Standard</div>
-      <div class="ctitle">Exclusion<br>Radii</div>
-      <div class="cdesc">AS 2601 spatial mapping.</div>
-      <div class="carr">↗</div>
-    </div>
-    <div class="bc hover-mag" onclick="go('pg-checklist')">
-      <div class="ctag">Operations</div>
-      <div class="ctitle">Pre-Pull<br>Checklist</div>
-      <div class="cdesc">QA/QC hold points.</div>
-      <div class="carr">↗</div>
-    </div>
-    <div class="bc s2 hover-mag" onclick="go('pg-data')">
-      <div class="ctag">Data Warehouses</div>
-      <div class="ctitle">Equipment Databases</div>
-      <div class="cdesc">Access integrated AS 2741 Shackles, AS 4497 Round Slings, and AS 3569 Wire Ropes.</div>
-      <div class="carr">↗</div>
-    </div>
-  </div>
-</div>
-
-<div id="pg-calc" class="page">
-  <button class="back-btn hover-mag" onclick="go('pg-dash')">Dashboard</button>
-  
+<div id="pg-calc" class="page active">
   <div class="calc-layout">
     <div class="inputs-col">
       <div class="panel">
@@ -244,9 +215,9 @@ table.dt tr.hl td{background:var(--pass-bg);color:var(--pass);font-weight:600;bo
         </div>
       </div>
 
-      <button class="run-btn hover-mag" onclick="runCalc()">Execute Analysis</button>
+      <button class="run-btn hover-mag" onclick="runCalc()">Execute Physics Analysis</button>
       <div class="sec-btns">
-        <button class="sec-btn hover-mag" onclick="genPDF()">Export PDF Report</button>
+        <button class="sec-btn hover-mag" onclick="genPDF()">Export QA/QC PDF</button>
       </div>
     </div>
 
@@ -254,7 +225,7 @@ table.dt tr.hl td{background:var(--pass-bg);color:var(--pass);font-weight:600;bo
       <div id="res-area" class="results-area">
         
         <div class="rg">
-          <div class="rc"><div class="rl">Recommended Pull (RPF)</div><div class="rv" id="oRPF" style="color:var(--accent);font-size:28px;">—</div></div>
+          <div class="rc"><div class="rl">Recommended Pull (RPF)</div><div class="rv" id="oRPF" style="color:var(--accent);font-size:36px;">—</div></div>
           <div class="rc"><div class="rl">Capacity Ratio</div><div class="rv" id="oRat">—</div></div>
           <div class="rc"><div class="rl">Required MBF</div><div class="rv" id="oMBF">—</div></div>
           <div class="rc"><div class="rl">Base Friction (FH)</div><div class="rv" id="oFH">—</div></div>
@@ -285,64 +256,17 @@ table.dt tr.hl td{background:var(--pass-bg);color:var(--pass);font-weight:600;bo
               <div class="rig-spec" id="rig-shack-sp">Factored for geometry & FOS</div>
             </div>
           </div>
-
-          <div class="rig-item">
-            <div class="rig-lbl">Bridle Slings (AS 4497)</div>
-            <div style="text-align:right;">
-              <div class="rig-val" id="rig-sling">—</div>
-              <div class="rig-spec" id="rig-sling-sp">Accounts for β angle tension</div>
-            </div>
-          </div>
         </div>
       </div>
 
       <div class="sim-wrap" id="sim-wrap">
-        <div class="sim-hdr"><div class="sim-title">VECTOR FORCE SIMULATION</div></div>
+        <div class="sim-hdr">
+          <div class="sim-title">REAL-TIME KINEMATIC SIMULATION</div>
+          <button class="sec-btn hover-mag" style="margin:0; padding:8px 16px; font-size:12px;" onclick="Sim.replay()">↺ REPLAY</button>
+        </div>
         <canvas id="sim-canvas"></canvas>
       </div>
 
-    </div>
-  </div>
-</div>
-
-<div id="pg-exclusion" class="page">
-  <button class="back-btn hover-mag" onclick="go('pg-dash')">Dashboard</button>
-  <div class="calc-layout">
-    <div class="inputs-col">
-      <div class="panel">
-        <div class="ph"><div class="ph-icon"></div><div class="ph-title">EXCLUSION MAPPING</div></div>
-        <div class="pb">
-          <div class="ig"><label>Vessel Height (H)</label><input type="number" id="exH" value="24.2" class="as hover-mag" oninput="updEx()"></div>
-          <div class="ig"><label>Machine Standoff (S)</label><input type="number" id="exS" value="52" class="as hover-mag" oninput="updEx()"></div>
-          
-          <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
-            <div class="chk pass" id="ex-chk"><div class="chk-label">Zone Compliance</div><div class="chk-val" id="ex-val">—</div><div class="chk-sub" id="ex-sub">—</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <svg id="exz-svg" viewBox="0 0 500 500"></svg>
-    </div>
-  </div>
-</div>
-
-<div id="pg-data" class="page">
-  <button class="back-btn hover-mag" onclick="go('pg-dash')">Dashboard</button>
-  <div class="panel" style="margin-bottom:24px;">
-    <div class="ph"><div class="ph-icon"></div><div class="ph-title">SHACKLES (AS 2741)</div></div>
-    <div class="data-wrap">
-      <table class="dt" id="tbl-shackles">
-        <tr><th>Size</th><th>WLL [t]</th><th>Pin Dia [mm]</th><th>Inside Width [mm]</th></tr>
-      </table>
-    </div>
-  </div>
-  <div class="panel">
-    <div class="ph"><div class="ph-icon"></div><div class="ph-title">ROUND SLINGS (AS 4497)</div></div>
-    <div class="data-wrap">
-      <table class="dt" id="tbl-slings">
-        <tr><th>Color Code</th><th>WLL [t]</th></tr>
-      </table>
     </div>
   </div>
 </div>
@@ -355,7 +279,6 @@ table.dt tr.hl td{background:var(--pass-bg);color:var(--pass);font-weight:600;bo
     </div>
     <div style="text-align:right;">
       <p><strong>Date:</strong> <span id="pr-date"></span></p>
-      <p><strong>Standard:</strong> AS 2601 / AS 1666 / AS 2741</p>
     </div>
   </div>
   
@@ -380,33 +303,27 @@ table.dt tr.hl td{background:var(--pass-bg);color:var(--pass);font-weight:600;bo
   <table class="pt2">
     <tr><th>Main Pull Line</th><td id="pr-r-rope"></td></tr>
     <tr><th>Attachment Shackles</th><td id="pr-r-shack"></td></tr>
-    <tr><th>Bridle Slings</th><td id="pr-r-sling"></td></tr>
   </table>
 
   <div class="pdf-imgs">
     <div class="pdf-img-box">
-      <strong>Vector Force Simulation</strong><br><br>
+      <strong>Kinematic Vector Output</strong><br><br>
       <img id="pdf-img-sim" src="">
-    </div>
-    <div class="pdf-img-box">
-      <strong>Exclusion Zone (AS 2601)</strong><br><br>
-      <img id="pdf-img-exz" src="">
     </div>
   </div>
 </div>
 
 <script>
+// --- THEME TOGGLE ---
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+}
+
 // --- DB DATA ---
 const DB_SHACKLES = [
-  {size:'5/8"', wll:3.25, pin:19.0, w:26.9}, {size:'3/4"', wll:4.75, pin:22.4, w:31.8},
-  {size:'7/8"', wll:6.50, pin:25.4, w:36.6}, {size:'1"', wll:8.50, pin:28.7, w:42.9},
-  {size:'1-1/8"', wll:12.0, pin:31.8, w:46.0}, {size:'1-1/4"', wll:17.0, pin:35.1, w:57.0},
-  {size:'1-1/2"', wll:25.0, pin:41.4, w:60.5}, {size:'1-3/4"', wll:35.0, pin:51.0, w:73.0},
-  {size:'2"', wll:55.0, pin:57.0, w:82.5}
-];
-const DB_SLINGS = [
-  {c:'Purple', wll:1}, {c:'Green', wll:2}, {c:'Yellow', wll:3}, {c:'Grey', wll:4},
-  {c:'Red', wll:5}, {c:'Brown', wll:6}, {c:'Blue', wll:8}, {c:'Orange', wll:10}, {c:'Orange (Heavy)', wll:15}
+  {size:'5/8"', wll:3.25}, {size:'3/4"', wll:4.75}, {size:'7/8"', wll:6.50}, 
+  {size:'1"', wll:8.50}, {size:'1-1/8"', wll:12.0}, {size:'1-1/4"', wll:17.0},
+  {size:'1-1/2"', wll:25.0}, {size:'1-3/4"', wll:35.0}, {size:'2"', wll:55.0}
 ];
 const DB_ROPES = [
   {dia:24, c:'6x37 IWRC', mbf:36.3}, {dia:28, c:'6x37 IWRC', mbf:49.2},
@@ -414,12 +331,7 @@ const DB_ROPES = [
   {dia:40, c:'6x37 IWRC', mbf:100.3}, {dia:44, c:'6x37 IWRC', mbf:121.3}
 ];
 
-// Build Tables
-const sTbl=document.getElementById('tbl-shackles'), slTbl=document.getElementById('tbl-slings');
-DB_SHACKLES.forEach(r=> sTbl.innerHTML+=`<tr><td>${r.size}</td><td>${r.wll.toFixed(2)}</td><td>${r.pin}</td><td>${r.w}</td></tr>`);
-DB_SLINGS.forEach(r=> slTbl.innerHTML+=`<tr><td><span style="display:inline-block;width:12px;height:12px;background:${r.c.split(' ')[0].toLowerCase()};border-radius:2px;margin-right:6px;border:1px solid #000;"></span>${r.c}</td><td>${r.wll.toFixed(1)}</td></tr>`);
-
-// --- UI / UX ---
+// --- MAGNETIC CURSOR ---
 const cr=document.getElementById('cr'), crr=document.getElementById('crr');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cr.style.left=mx+'px';cr.style.top=my+'px';});
@@ -429,13 +341,6 @@ document.querySelectorAll('.hover-mag').forEach(el=>{
   el.addEventListener('mouseenter',()=>{document.body.classList.add('mag-active');});
   el.addEventListener('mouseleave',()=>{document.body.classList.remove('mag-active');});
 });
-
-function go(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-  if(id==='pg-exclusion') updEx();
-}
 
 let LAST={}; // store state
 
@@ -474,13 +379,10 @@ function runCalc(){
   
   // Smart Rigging Selection
   const recRope = DB_ROPES.find(r=>r.mbf>=MBF);
-  // Shackle FOS approx 5:1 applied to WLL
   const shackleLoad = FRmax / (sang>0?2:1); 
   const recShack = DB_SHACKLES.find(s=>s.wll >= shackleLoad);
-  // Sling WLL (Factor of 7 already built into WLL by AS4497)
-  const recSling = DB_SLINGS.find(s=>s.wll >= shackleLoad);
 
-  LAST = {H,W,D,A,h,S,Fc,FH,FV,FR,kexc,RPF,ratio,MBF,slip,recRope,recShack,recSling,theta};
+  LAST = {H,W,D,A,h,S,Fc,FH,FV,FR,kexc,RPF,ratio,MBF,slip,recRope,recShack,theta};
 
   // UI Updates
   document.getElementById('res-area').style.display='block';
@@ -504,173 +406,319 @@ function runCalc(){
   
   document.getElementById('rig-shack').innerText = recShack ? `${recShack.size} Bow Shackle` : "EXCEEDS DB";
   document.getElementById('rig-shack-sp').innerText = recShack ? `WLL: ${recShack.wll.toFixed(1)} t` : "";
-  
-  document.getElementById('rig-sling').innerText = recSling ? `${recSling.c} Round Sling` : "EXCEEDS DB";
-  document.getElementById('rig-sling-sp').innerText = recSling ? `WLL: ${recSling.wll.toFixed(1)} t` : "";
 
   // Trigger Sim
   document.getElementById('sim-wrap').style.display='block';
-  Sim.run(ratio>=1 && !slip);
+  let simMode = 'pass';
+  if (slip) simMode = 'slip';
+  else if (ratio < 1) simMode = 'snap';
+  
+  Sim.run(simMode);
   document.getElementById('sim-wrap').scrollIntoView();
 }
 
-// --- EXCLUSION ZONE ---
-function updEx(){
-  const H = parseFloat(document.getElementById('exH').value)||24;
-  const S = parseFloat(document.getElementById('exS').value)||52;
-  const rMin = 1.5*H;
-  
-  const c = document.getElementById('ex-chk'), v = document.getElementById('ex-val'), s = document.getElementById('ex-sub');
-  c.className='chk '+(S>=rMin?'pass':'fail');
-  v.innerText = S>=rMin ? 'COMPLIANT' : 'VIOLATION';
-  s.innerText = `S=${S}m | Min 1.5H=${rMin.toFixed(1)}m`;
-
-  const svg = document.getElementById('exz-svg');
-  // Simple top down draw
-  svg.innerHTML=`
-    <rect width="500" height="500" fill="#111"/>
-    <circle cx="250" cy="250" r="${rMin*3}" fill="rgba(166,21,32,.2)" stroke="#a61520" stroke-width="2" stroke-dasharray="5 5"/>
-    <circle cx="250" cy="250" r="15" fill="#333" stroke="#df4700" stroke-width="2"/>
-    <line x1="250" y1="250" x2="250" y2="${250-S*3}" stroke="#fff" stroke-dasharray="2 4"/>
-    <circle cx="250" cy="${250-S*3}" r="8" fill="#ff6600"/>
-    <text x="260" y="${250-S*1.5}" fill="#fff" font-family="monospace" font-size="12">S = ${S}m</text>
-    <text x="${250+rMin*3+10}" y="250" fill="#a61520" font-family="monospace" font-size="12">1.5H Radius</text>
-  `;
-}
-
-// --- HUD SIMULATION ---
+// --- ADVANCED KINEMATIC SIMULATION ---
 const Sim=(()=>{
   const c = document.getElementById('sim-canvas');
   const ctx = c.getContext('2d');
-  let raf, phase=0, pass=true;
+  let raf, phase=0, mode='pass'; // 'pass', 'snap', 'slip'
+  let dustParticles = [];
+  let screenShake = {x:0, y:0, amt:0};
   
-  function run(isPass){
-    c.width=c.parentElement.clientWidth; c.height=360;
-    pass = isPass; phase=0;
+  function run(runMode){
+    c.width=c.parentElement.clientWidth; c.height=450;
+    mode = runMode; phase=0; dustParticles=[]; screenShake={x:0,y:0,amt:0};
     cancelAnimationFrame(raf);
     loop();
   }
 
+  function replay() {
+    run(mode);
+  }
+
   function loop(){
-    phase += 0.008;
-    if(phase>1.5) return; // hold end state
+    phase += 0.006; 
+    updatePhysics();
     draw();
-    raf = requestAnimationFrame(loop);
+    if(phase<1.5 || dustParticles.length>0 || screenShake.amt>0.1) {
+        raf = requestAnimationFrame(loop);
+    }
+  }
+
+  function updatePhysics() {
+    // Decay screen shake
+    if(screenShake.amt > 0) {
+        screenShake.x = (Math.random()-0.5) * screenShake.amt;
+        screenShake.y = (Math.random()-0.5) * screenShake.amt;
+        screenShake.amt *= 0.9;
+        if(screenShake.amt < 0.1) screenShake.amt = 0;
+    }
+
+    // Update Dust
+    for(let i=dustParticles.length-1; i>=0; i--) {
+        let p = dustParticles[i];
+        p.x += p.vx; p.y += p.vy;
+        p.vy += 0.1; // gravity
+        p.life -= 0.02;
+        p.size *= 1.02; // expand
+        if(p.life <= 0) dustParticles.splice(i, 1);
+    }
+
+    // Triggers
+    if(mode === 'snap' && phase > 0.4 && phase < 0.41 && screenShake.amt === 0) {
+        screenShake.amt = 15; // Violent snap shake
+    }
+    if(mode === 'pass' && phase > 0.9 && phase < 0.91 && screenShake.amt === 0) {
+        screenShake.amt = 25; // Massive impact shake
+        // Spawn dust
+        for(let i=0; i<40; i++) {
+            dustParticles.push({
+                x: c.width*0.8 + (Math.random()*100 - 50),
+                y: c.height*0.85,
+                vx: (Math.random()-0.5)*8,
+                vy: (Math.random()-1)*5,
+                size: Math.random()*20 + 10,
+                life: 1.0 + Math.random(),
+                color: `rgba(120, 110, 100, ${Math.random()*0.5 + 0.2})`
+            });
+        }
+    }
   }
 
   function draw(){
     ctx.clearRect(0,0,c.width,c.height);
-    const W=c.width, H=c.height, gY=H*0.8;
+    ctx.save();
+    ctx.translate(screenShake.x, screenShake.y);
+
+    const W=c.width, H=c.height, gY=H*0.85;
     
-    // Grid
-    ctx.strokeStyle='#222'; ctx.lineWidth=1;
+    // Background Grid
+    ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1;
     for(let i=0;i<W;i+=40){ ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
     for(let i=0;i<H;i+=40){ ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke();}
 
     // Ground
-    ctx.fillStyle='#181818'; ctx.fillRect(0,gY,W,H-gY);
-    ctx.strokeStyle='#df4700'; ctx.lineWidth=2;
+    ctx.fillStyle='#111'; ctx.fillRect(0,gY,W,H-gY);
+    ctx.strokeStyle='#333'; ctx.lineWidth=4;
     ctx.beginPath();ctx.moveTo(0,gY);ctx.lineTo(W,gY);ctx.stroke();
 
-    // Math mapped
-    const vX = W*0.7, eX = W*0.2;
-    const vH = 140;
-    let ang = 0;
+    // Setup coordinates
+    let vX = W*0.8, eX = W*0.15;
+    const vH = 200, vW = 40;
     
-    if(pass && phase>0.3){
-      const t = Math.min((phase-0.3)*1.5, 1);
-      ang = -(t*t)*1.3; // Topple
-    } else if(!pass && phase>0.3){
-      ang = Math.sin((phase-0.3)*20)*0.05 * Math.exp(-(phase-0.3)*5); // Shake
+    // Apply kinematics based on mode
+    let ang = 0;
+    let slideX = 0;
+    let ropeTension = 0; // 0 (slack) to 1 (taut)
+    let excRecoil = 0;
+
+    if(mode === 'pass') {
+        if(phase < 0.2) { ropeTension = phase/0.2; } // Tension builds
+        else if(phase < 0.9) { 
+            ropeTension = 1;
+            // Gravity acceleration curve (t^3)
+            let t = (phase-0.2)/0.7;
+            ang = -(t*t*t) * 1.5; 
+        } else {
+            ang = -1.5; // Flat on ground
+            ropeTension = 0; // Goes slack after drop
+        }
+    } 
+    else if(mode === 'snap') {
+        if(phase < 0.3) { ropeTension = phase/0.3; } // Tension builds
+        else if(phase < 0.4) {
+            ropeTension = 1;
+            ang = -0.02; // Strains slightly
+        } else {
+            ropeTension = -1; // Broken flag
+            ang = 0; // Drops back
+            excRecoil = Math.sin((phase-0.4)*20) * Math.exp(-(phase-0.4)*5) * -20; // Excavator rocks back
+        }
     }
+    else if(mode === 'slip') {
+        if(phase < 0.2) { ropeTension = phase/0.2; }
+        else if(phase < 0.8) {
+            ropeTension = 1;
+            slideX = -(phase-0.2) * 100; // Slides left
+            // Kick up small dust while sliding
+            if(Math.random()<0.3) {
+                 dustParticles.push({
+                    x: vX + slideX - vW/2, y: gY,
+                    vx: -1, vy: -1, size: Math.random()*10+5, life: 0.5,
+                    color: `rgba(150, 140, 130, 0.3)`
+                });
+            }
+        } else {
+            ropeTension = 1;
+        }
+    }
+
+    // Apply sliding
+    vX += slideX;
+
+    // Draw Pre-cut / Hinge block (Birdsmouth)
+    ctx.fillStyle='#555';
+    ctx.beginPath(); ctx.moveTo(vX, gY); ctx.lineTo(vX-15, gY); ctx.lineTo(vX, gY-15); ctx.fill();
 
     // Draw Vessel
     ctx.save();
     ctx.translate(vX, gY);
     ctx.rotate(ang);
-    ctx.fillStyle='#333'; ctx.fillRect(-15, -vH, 30, vH);
-    ctx.strokeStyle='#555'; ctx.lineWidth=2; ctx.strokeRect(-15, -vH, 30, vH);
-    ctx.fillStyle='#df4700'; ctx.beginPath(); ctx.arc(-15, -vH*0.8, 4, 0, Math.PI*2); ctx.fill(); // Lug
+    
+    // Impact Squash
+    if(mode === 'pass' && phase >= 0.9 && phase < 0.95) {
+        ctx.scale(1 + Math.sin((phase-0.9)*40)*0.05, 1 - Math.sin((phase-0.9)*40)*0.05);
+    }
+
+    // Vessel Body
+    const vGrad = ctx.createLinearGradient(-vW, 0, 0, 0);
+    vGrad.addColorStop(0, '#222'); vGrad.addColorStop(0.5, '#444'); vGrad.addColorStop(1, '#222');
+    ctx.fillStyle=vGrad; ctx.fillRect(-vW, -vH, vW, vH);
+    
+    // Rust/Detail lines
+    ctx.strokeStyle='rgba(0,0,0,0.5)'; ctx.lineWidth=2;
+    for(let i=-vH+20; i<0; i+=40) { ctx.beginPath(); ctx.moveTo(-vW, i); ctx.lineTo(0, i); ctx.stroke(); }
+    
+    // Attachment Lug
+    ctx.fillStyle='#df4700'; ctx.beginPath(); ctx.arc(-vW, -vH*0.8, 6, 0, Math.PI*2); ctx.fill(); 
     ctx.restore();
 
+    // Excavator Coordinates
+    eX += excRecoil;
+    const hx = eX+90, hy = gY-100; // Hook position
+
     // Draw Rope
-    const lx = vX - 15*Math.cos(ang) - (-vH*0.8)*Math.sin(ang);
-    const ly = gY - 15*Math.sin(ang) + (-vH*0.8)*Math.cos(ang);
-    const hx = eX+30, hy = gY-40; // Excavator hook
+    const lx = vX - vW*Math.cos(ang) - (-vH*0.8)*Math.sin(ang);
+    const ly = gY - vW*Math.sin(ang) + (-vH*0.8)*Math.cos(ang);
+    
+    if(ropeTension >= 0) {
+        // Catenary sag interpolation
+        ctx.strokeStyle = ropeTension === 1 ? '#df4700' : '#888';
+        ctx.lineWidth = ropeTension === 1 ? 4 : 2;
+        ctx.beginPath(); 
+        ctx.moveTo(hx,hy);
+        
+        // Calculate control point for sag
+        let sag = 50 * (1 - ropeTension);
+        let midX = (hx+lx)/2, midY = (hy+ly)/2 + sag;
+        
+        ctx.quadraticCurveTo(midX, midY, lx, ly); 
+        ctx.stroke();
+    } else {
+        // SNAPPED ROPE (Whiplash)
+        ctx.strokeStyle = '#a61520'; ctx.lineWidth = 4;
+        let snapP = (phase - 0.4); // Time since snap
+        
+        // Excavator side whip
+        ctx.beginPath(); ctx.moveTo(hx,hy);
+        ctx.quadraticCurveTo(hx+40, hy+100 + Math.sin(snapP*30)*40, hx+80, hy+50);
+        ctx.stroke();
+        
+        // Vessel side whip
+        ctx.beginPath(); ctx.moveTo(lx,ly);
+        ctx.quadraticCurveTo(lx-40, ly+80 - Math.sin(snapP*30)*40, lx-80, ly+40);
+        ctx.stroke();
+    }
 
-    ctx.strokeStyle = (pass && phase>0.3) ? '#0e6b38' : (!pass && phase>0.4) ? '#a61520' : '#888';
-    ctx.lineWidth = (!pass && phase>0.4 && phase<0.5) ? 0 : 2; // Snap effect
-    ctx.beginPath(); ctx.moveTo(hx,hy); ctx.lineTo(lx,ly); ctx.stroke();
+    // Draw Excavator (Detailed Silhouette)
+    ctx.save();
+    ctx.translate(eX, gY);
+    
+    // Tracks
+    ctx.fillStyle='#000'; ctx.beginPath(); ctx.roundRect(-40, -20, 90, 20, 10); ctx.fill();
+    ctx.strokeStyle='#333'; ctx.lineWidth=2;
+    for(let i=-30; i<40; i+=15) { ctx.beginPath(); ctx.arc(i, -10, 6, 0, Math.PI*2); ctx.stroke(); }
+    
+    // Body
+    ctx.fillStyle='#e05500'; ctx.beginPath(); ctx.roundRect(-35, -60, 70, 40, 5); ctx.fill();
+    ctx.fillStyle='#111'; ctx.fillRect(-35, -60, 20, 40); // Counterweight
+    
+    // Cab
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.moveTo(-5, -60); ctx.lineTo(-5, -100); ctx.lineTo(25, -100); ctx.lineTo(30, -60); ctx.fill();
+    ctx.fillStyle='rgba(200,220,255,0.2)'; ctx.beginPath(); ctx.moveTo(0, -60); ctx.lineTo(0, -95); ctx.lineTo(20, -95); ctx.lineTo(25, -60); ctx.fill(); // Window
+    
+    // Boom & Stick
+    ctx.strokeStyle='#e05500'; ctx.lineWidth=14; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath(); ctx.moveTo(10, -50); ctx.lineTo(50, -130); ctx.lineTo(90, -100); ctx.stroke();
+    
+    // Hydraulic cylinders
+    ctx.strokeStyle='#ccc'; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.moveTo(20,-50); ctx.lineTo(40,-100); ctx.stroke();
+    ctx.restore();
 
-    // Draw Excavator (Simple)
-    ctx.fillStyle='#e05500'; ctx.fillRect(eX-30, gY-30, 50, 20); // Body
-    ctx.fillStyle='#222'; ctx.fillRect(eX-40, gY-10, 70, 10); // Tracks
-    ctx.strokeStyle='#e05500'; ctx.lineWidth=6; ctx.lineCap='round';
-    ctx.beginPath(); ctx.moveTo(eX, gY-20); ctx.lineTo(eX+15, gY-60); ctx.lineTo(hx, hy); ctx.stroke(); // Boom
+    // Draw Dust Particles
+    for(let p of dustParticles) {
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+    }
 
-    // --- ENGINEERING HUD ---
+    // --- HUD OVERLAY ---
     if(LAST.RPF){
-      ctx.font = '12px "IBM Plex Mono"';
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.font = '14px "IBM Plex Mono"';
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
       
-      // HUD Box
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
-      ctx.fillRect(20, 20, 160, 100);
-      ctx.strokeStyle = '#df4700'; ctx.strokeRect(20, 20, 160, 100);
+      ctx.fillStyle = 'rgba(0,0,0,0.85)';
+      ctx.fillRect(20, 20, 220, 110);
+      ctx.strokeStyle = '#df4700'; ctx.lineWidth = 2; ctx.strokeRect(20, 20, 220, 110);
       
-      ctx.fillStyle = '#df4700';
-      ctx.fillText(`LIVE TELEMETRY`, 30, 40);
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = '#df4700'; ctx.fillText(`SYSTEM TELEMETRY`, 35, 45);
       
-      // Dynamic numbers based on phase
-      let simT = (pass && phase>0.3) ? LAST.FR : (!pass && phase>0.4) ? 0 : LAST.FR*(phase/0.3);
-      ctx.fillText(`Tension: ${simT.toFixed(1)} t`, 30, 60);
-      ctx.fillText(`Angle:   ${(LAST.theta*180/Math.PI).toFixed(1)}°`, 30, 80);
-      ctx.fillText(`Ratio:   ${LAST.ratio.toFixed(2)}`, 30, 100);
+      let curTension = 0;
+      if(mode==='pass') curTension = (phase<0.2) ? LAST.FR*(phase/0.2) : (phase<0.9)? LAST.FR : 0;
+      if(mode==='snap') curTension = (phase<0.3) ? LAST.FRmax*(phase/0.3) : (phase<0.4)? LAST.FRmax : 0;
+      if(mode==='slip') curTension = (phase<0.2) ? LAST.FR*(phase/0.2) : LAST.FR;
 
-      // Vectors on Vessel
-      if(phase>0.2 && (!pass || phase<0.8)){
-        const cgX = vX + Math.sin(-ang)*(vH/2);
-        const cgY = gY - Math.cos(-ang)*(vH/2);
+      ctx.fillStyle = (mode==='snap' && phase>0.35) ? '#ff4455' : '#fff';
+      ctx.fillText(`Tension: ${curTension.toFixed(1)} t`, 35, 70);
+      ctx.fillText(`Vessel Angle: ${(ang*-180/Math.PI).toFixed(1)}°`, 35, 95);
+      ctx.fillText(`Mode: ${mode.toUpperCase()}`, 35, 120);
+
+      // Force Vectors on Vessel (Only if not flat on ground)
+      if(phase > 0.2 && ang > -1.4) {
+        const cgX = vX - (vW/2)*Math.cos(ang) - (-vH/2)*Math.sin(ang);
+        const cgY = gY - (vW/2)*Math.sin(ang) + (-vH/2)*Math.cos(ang);
         
-        // Gravity Vector (W)
-        drawVector(ctx, cgX, cgY, cgX, cgY+40, '#0e6b38', 'W');
+        // Gravity (W)
+        drawVector(ctx, cgX, cgY, cgX, cgY+60, '#0e6b38', 'W');
         
-        // Tension Vector (T)
-        if(simT>0){
-           const vecLen = 40;
+        // Tension (T)
+        if(ropeTension > 0) {
+           const vecLen = 60 * ropeTension;
            const vxDir = (hx-lx); const vyDir = (hy-ly);
            const mag = Math.sqrt(vxDir*vxDir + vyDir*vyDir);
            drawVector(ctx, lx, ly, lx+(vxDir/mag)*vecLen, ly+(vyDir/mag)*vecLen, '#df4700', 'T');
         }
       }
     }
+
+    ctx.restore();
   }
 
   function drawVector(ctx, x1, y1, x2, y2, color, label){
-    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(x2,y2, 3, 0, Math.PI*2); ctx.fill();
-    ctx.font = '12px sans-serif'; ctx.fillText(label, x2+5, y2+5);
+    
+    // Arrowhead
+    const ang = Math.atan2(y2-y1, x2-x1);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - 10*Math.cos(ang-Math.PI/6), y2 - 10*Math.sin(ang-Math.PI/6));
+    ctx.lineTo(x2 - 10*Math.cos(ang+Math.PI/6), y2 - 10*Math.sin(ang+Math.PI/6));
+    ctx.fill();
+
+    ctx.font = 'bold 16px sans-serif'; 
+    ctx.fillText(label, x2+10, y2+10);
   }
 
-  return {run};
+  return {run, replay};
 })();
 
 // --- PDF REPORT ---
 function genPDF(){
   if(!LAST.RPF) { alert("Run Analysis First"); return; }
   
-  // Snap canvas to images
   document.getElementById('pdf-img-sim').src = document.getElementById('sim-canvas').toDataURL();
-  
-  // Create static SVG for exclusion zone PDF
-  const svgStr = new XMLSerializer().serializeToString(document.getElementById('exz-svg'));
-  const svgBlob = new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'});
-  const url = URL.createObjectURL(svgBlob);
-  document.getElementById('pdf-img-exz').src = url;
 
-  // Fill text
   document.getElementById('pr-date').innerText = new Date().toLocaleDateString();
   document.getElementById('pr-vid').innerText = document.getElementById('vname').value;
   document.getElementById('pr-H').innerText = LAST.H+'m';
@@ -689,7 +737,6 @@ function genPDF(){
 
   document.getElementById('pr-r-rope').innerText = LAST.recRope ? `⌀${LAST.recRope.dia}mm ${LAST.recRope.c}` : "CONSULT ENGINEER";
   document.getElementById('pr-r-shack').innerText = LAST.recShack ? `${LAST.recShack.size} Bow Shackle` : "EXCEEDS DB";
-  document.getElementById('pr-r-sling').innerText = LAST.recSling ? `${LAST.recSling.c} Round Sling` : "EXCEEDS DB";
 
   const app = document.querySelector('.app'); const pt = document.getElementById('print-template');
   app.style.display='none'; pt.style.display='block';
@@ -698,7 +745,7 @@ function genPDF(){
     html2pdf().set({margin:10, filename:'Pull_Force_Plan.pdf', image:{type:'jpeg',quality:1}, html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4'}}).from(pt).save().then(()=>{
       pt.style.display='none'; app.style.display='block';
     });
-  }, 500); // short wait for images to load
+  }, 500); 
 }
 
 // Init
